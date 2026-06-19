@@ -1,849 +1,151 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
-<html>
+<!DOCTYPE html>
+<html lang="en">
 <head>
-  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-  <meta http-equiv="Content-Style-Type" content="text/css">
-  <title></title>
-  <meta name="Generator" content="Cocoa HTML Writer">
-  <meta name="CocoaVersion" content="2681.2">
-  <style type="text/css">
-    p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
-    p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Personal Sneaker Stylist</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/color-thief/2.3.0/color-thief.umd.js"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: { extend: { colors: { brand: { 50:'#eff6ff',100:'#dbeafe',500:'#3b82f6',600:'#2563eb',700:'#1d4ed8' } } } }
+        }
+    </script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+        .loader { border: 4px solid #f3f3f3; border-top: 4px solid #3498db; border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; }
+        @keyframes spin { 0%{transform:rotate(0deg)} 100%{transform:rotate(360deg)} }
+        .filter-btn,.tab-btn { transition: all 0.2s ease-in-out; }
+        .filter-btn.active,.tab-btn.active { background-color:#2563EB; color:white; font-weight:600; }
+        .filter-btn.inactive,.tab-btn.inactive { background-color:#F3F4F6; color:#374151; }
+        .dark .filter-btn.inactive,.dark .tab-btn.inactive { background-color:#374151; color:#d1d5db; }
+        .modal { transition: opacity 0.25s ease; }
+        .score-ring { position:relative; display:inline-flex; align-items:center; justify-content:center; }
+        .score-ring svg { transform: rotate(-90deg); }
+        .score-ring .score-text { position:absolute; font-weight:700; font-size:0.75rem; }
+        .fade-in { animation: fadeIn 0.3s ease-in; }
+        @keyframes fadeIn { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
+        .sneaker-card:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(0,0,0,0.1); }
+        .sneaker-card { transition: transform 0.2s, box-shadow 0.2s; }
+        .toast { animation: slideUp 0.3s ease-out, fadeOut 0.3s ease-in 2.7s; }
+        @keyframes slideUp { from{transform:translateY(100%);opacity:0} to{transform:translateY(0);opacity:1} }
+        @keyframes fadeOut { from{opacity:1} to{opacity:0} }
+        .wishlist-heart { cursor:pointer; transition: transform 0.2s; }
+        .wishlist-heart:hover { transform: scale(1.2); }
+        .dark .bg-white { background-color: #1f2937; }
+        .dark .bg-gray-50 { background-color: #374151; }
+        .dark .bg-gray-100 { background-color: #111827; }
+        .dark .text-gray-900 { color: #f9fafb; }
+        .dark .text-gray-800 { color: #e5e7eb; }
+        .dark .text-gray-700 { color: #d1d5db; }
+        .dark .text-gray-500 { color: #9ca3af; }
+        .dark .text-gray-400 { color: #6b7280; }
+        .dark .border-gray-200 { border-color: #4b5563; }
+        .dark input, .dark select { background-color: #374151; color: #e5e7eb; border-color: #4b5563; }
+    </style>
 </head>
-<body>
-<p class="p1">&lt;!DOCTYPE html&gt;</p>
-<p class="p1">&lt;html lang="en"&gt;</p>
-<p class="p2"><br></p>
-<p class="p1">&lt;head&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;meta charset="UTF-8"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;meta name="viewport" content="width=device-width, initial-scale=1.0"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;title&gt;Personal Sneaker Stylist&lt;/title&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;!-- Tailwind CSS for styling --&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;script src="https://cdn.tailwindcss.com"&gt;&lt;/script&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;!-- Color Thief library for extracting colors from images --&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;script src="https://cdnjs.cloudflare.com/ajax/libs/color-thief/2.3.0/color-thief.umd.js"&gt;&lt;/script&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;style&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>/* Custom font and minor style adjustments */</p>
-<p class="p1"><span class="Apple-converted-space">        </span>@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap');</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>body {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>font-family: 'Inter', sans-serif;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>/* Simple spinner animation */</p>
-<p class="p1"><span class="Apple-converted-space">        </span>.loader {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>border: 4px solid #f3f3f3;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>border-top: 4px solid #3498db;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>border-radius: 50%;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>width: 40px;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>height: 40px;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>animation: spin 1s linear infinite;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>@keyframes spin {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>0% {</p>
-<p class="p1"><span class="Apple-converted-space">                </span>transform: rotate(0deg);</p>
-<p class="p1"><span class="Apple-converted-space">            </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">            </span>100% {</p>
-<p class="p1"><span class="Apple-converted-space">                </span>transform: rotate(360deg);</p>
-<p class="p1"><span class="Apple-converted-space">            </span>}</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>/* Styles for active/inactive filter buttons */</p>
-<p class="p1"><span class="Apple-converted-space">        </span>.filter-btn,</p>
-<p class="p1"><span class="Apple-converted-space">        </span>.tab-btn {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>transition: all 0.2s ease-in-out;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>.filter-btn.active,</p>
-<p class="p1"><span class="Apple-converted-space">        </span>.tab-btn.active {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>background-color: #2563EB;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>/* blue-600 */</p>
-<p class="p1"><span class="Apple-converted-space">            </span>color: white;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>font-weight: 600;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>.filter-btn.inactive,</p>
-<p class="p1"><span class="Apple-converted-space">        </span>.tab-btn.inactive {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>background-color: #F3F4F6;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>/* gray-100 */</p>
-<p class="p1"><span class="Apple-converted-space">            </span>color: #374151;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>/* gray-700 */</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>/* Modal styles */</p>
-<p class="p1"><span class="Apple-converted-space">        </span>.modal {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>transition: opacity 0.25s ease;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;/style&gt;</p>
-<p class="p1">&lt;/head&gt;</p>
-<p class="p2"><br></p>
-<p class="p1">&lt;body class="bg-gray-100 text-gray-800 flex items-center justify-center min-h-screen p-4"&gt;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="w-full max-w-md bg-white rounded-2xl shadow-xl p-6 md:p-8"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;header class="text-center mb-6"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;h1 class="text-3xl font-bold text-gray-900"&gt;Personal Sneaker Stylist&lt;/h1&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;p class="text-gray-500 mt-2"&gt;Your AI-powered style assistant.&lt;/p&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;/header&gt;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;!-- Main App Tabs --&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="mb-6 border-b border-gray-200"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;nav class="flex -mb-px" aria-label="Tabs"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;button class="tab-btn active w-1/4 py-4 px-1 text-center border-b-2 font-medium text-sm" data-tab="stylist"&gt;Stylist&lt;/button&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;button class="tab-btn inactive w-1/4 py-4 px-1 text-center border-b-2 font-medium text-sm" data-tab="browse"&gt;Browse&lt;/button&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;button class="tab-btn inactive w-1/4 py-4 px-1 text-center border-b-2 font-medium text-sm" data-tab="outfitBuilder"&gt;Outfits&lt;/button&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;button class="tab-btn inactive w-1/4 py-4 px-1 text-center border-b-2 font-medium text-sm" data-tab="closet"&gt;Closet&lt;/button&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;/nav&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;main id="stylist-view"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;!-- Stylist View Content --&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;div class="mb-6"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;label class="block text-sm font-medium text-gray-700 mb-2"&gt;1. Upload Your Outfit&lt;/label&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;input type="file" id="image-upload" accept="image/*" class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 cursor-pointer" /&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;div id="image-preview-container" class="mb-6 hidden w-full aspect-square bg-gray-100 rounded-xl flex items-center justify-center overflow-hidden"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;img id="image-preview" src="#" alt="Your Outfit" class="w-full h-full object-cover" /&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;div id="image-placeholder" class="mb-6 w-full aspect-square bg-gray-100 rounded-xl flex items-center justify-center border-2 border-dashed"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;p class="text-gray-400"&gt;Image preview&lt;/p&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;div class="mb-6"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;label class="block text-sm font-medium text-gray-700 mb-2"&gt;2. Select an Occasion&lt;/label&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;div id="occasion-filters" class="grid grid-cols-3 gap-2"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>&lt;button class="filter-btn py-2 px-4 rounded-lg active" data-occasion="casual"&gt;Casual&lt;/button&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>&lt;button class="filter-btn py-2 px-4 rounded-lg inactive" data-occasion="athleisure"&gt;Athleisure&lt;/button&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>&lt;button class="filter-btn py-2 px-4 rounded-lg inactive" data-occasion="work"&gt;Work&lt;/button&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;button id="analyze-button" class="w-full bg-blue-600 text-white font-bold py-3 px-4 rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all duration-200 disabled:bg-gray-400 disabled:cursor-not-allowed"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>3. Analyze Outfit</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;/button&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;div id="results-container" class="mt-8"&gt;&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;/main&gt;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;div id="browse-view" class="hidden"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;h2 class="text-xl font-bold text-center mb-4"&gt;Browse Collection&lt;/h2&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;input type="text" id="browse-search" placeholder="Search for a sneaker..." class="w-full rounded-md border-gray-200 shadow-sm sm:text-sm p-2 border mb-4"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;div id="browse-items-container" class="space-y-3 max-h-96 overflow-y-auto"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;!-- Browse items will be injected here --&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;div id="outfit-builder-view" class="hidden"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;div id="outfit-builder-selection"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;h2 class="text-xl font-bold text-center mb-4"&gt;Select a Sneaker to Style&lt;/h2&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;div id="outfit-builder-closet-items" class="grid grid-cols-3 gap-4"&gt;&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;div id="outfit-builder-results" class="hidden"&gt;&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;div id="closet-view" class="hidden"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;div class="flex justify-between items-center mb-4"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;h2 class="text-xl font-bold"&gt;My Sneaker Closet&lt;/h2&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;button id="add-sneaker-btn" class="bg-blue-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-blue-700 text-sm"&gt;+ Add New&lt;/button&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;div id="closet-items-container" class="space-y-3"&gt;&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;/div&gt;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;!-- Add/Edit Sneaker Modal --&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;div id="add-sneaker-modal" class="modal fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="relative top-20 mx-auto p-5 border w-full max-w-md shadow-lg rounded-md bg-white"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;div class="mt-3 text-center"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;h3 id="modal-title" class="text-lg leading-6 font-medium text-gray-900"&gt;Add a Custom Sneaker&lt;/h3&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;form id="add-sneaker-form" class="mt-2 px-7 py-3 space-y-4 text-left"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>&lt;input type="hidden" id="sneaker-id"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>&lt;div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>&lt;label for="sneaker-name" class="text-sm font-medium"&gt;Sneaker Name&lt;/label&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>&lt;input type="text" id="sneaker-name" required class="mt-1 w-full rounded-md border-gray-200 shadow-sm sm:text-sm p-2 border"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>&lt;div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>&lt;label for="sneaker-image-upload" class="text-sm font-medium"&gt;Thumbnail&lt;/label&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>&lt;input type="file" id="sneaker-image-upload" accept="image/*" class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-gray-50 file:text-gray-700 hover:file:bg-gray-100"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>&lt;img id="modal-image-preview" src="#" alt="Sneaker preview" class="hidden mt-2 w-24 h-24 rounded-md object-cover mx-auto" /&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>&lt;div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>&lt;label class="text-sm font-medium"&gt;Colors (AI Suggested)&lt;/label&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>&lt;div id="color-checkboxes" class="grid grid-cols-3 gap-2 mt-1"&gt;&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>&lt;div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>&lt;label class="text-sm font-medium"&gt;Occasions&lt;/label&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>&lt;div id="occasion-checkboxes" class="grid grid-cols-3 gap-2 mt-1"&gt;&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;/form&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;div class="items-center px-4 py-3"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>&lt;button id="save-sneaker-btn" class="px-4 py-2 bg-blue-600 text-white text-base font-medium rounded-md w-full shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"&gt;Save Sneaker&lt;/button&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>&lt;button id="cancel-sneaker-btn" class="mt-2 px-4 py-2 bg-gray-200 text-gray-800 text-base font-medium rounded-md w-full shadow-sm hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-300"&gt;Cancel&lt;/button&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;/div&gt;</p>
-<p class="p2"><br></p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;script&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>// --- 1. SETUP AND DATA ---</p>
-<p class="p1"><span class="Apple-converted-space">        </span>const SNEAKER_DB = [{</p>
-<p class="p1"><span class="Apple-converted-space">            </span>id: 1,</p>
-<p class="p1"><span class="Apple-converted-space">            </span>name: "Air Jordan 1 'Chicago'",</p>
-<p class="p1"><span class="Apple-converted-space">            </span>colors: ['Red', 'White', 'Black'],</p>
-<p class="p1"><span class="Apple-converted-space">            </span>occasions: ['casual'],</p>
-<p class="p1"><span class="Apple-converted-space">            </span>imageUrl: 'https://placehold.co/100x100/FEE2E2/B91C1C?text=AJ1+Chicago'</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}, {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>id: 2,</p>
-<p class="p1"><span class="Apple-converted-space">            </span>name: "Nike Air Force 1 '07",</p>
-<p class="p1"><span class="Apple-converted-space">            </span>colors: ['White'],</p>
-<p class="p1"><span class="Apple-converted-space">            </span>occasions: ['casual', 'work'],</p>
-<p class="p1"><span class="Apple-converted-space">            </span>imageUrl: 'https://placehold.co/100x100/FFFFFF/1F2937?text=AF1'</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}, {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>id: 3,</p>
-<p class="p1"><span class="Apple-converted-space">            </span>name: "Nike Dunk Low 'Panda'",</p>
-<p class="p1"><span class="Apple-converted-space">            </span>colors: ['Black', 'White'],</p>
-<p class="p1"><span class="Apple-converted-space">            </span>occasions: ['casual'],</p>
-<p class="p1"><span class="Apple-converted-space">            </span>imageUrl: 'https://placehold.co/100x100/000000/FFFFFF?text=Panda+Dunk'</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}, {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>id: 4,</p>
-<p class="p1"><span class="Apple-converted-space">            </span>name: "Adidas Ultraboost 'Triple White'",</p>
-<p class="p1"><span class="Apple-converted-space">            </span>colors: ['White'],</p>
-<p class="p1"><span class="Apple-converted-space">            </span>occasions: ['casual', 'athleisure'],</p>
-<p class="p1"><span class="Apple-converted-space">            </span>imageUrl: 'https://placehold.co/100x100/FFFFFF/111827?text=Ultraboost'</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}, {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>id: 5,</p>
-<p class="p1"><span class="Apple-converted-space">            </span>name: "Yeezy 700 'Wave Runner'",</p>
-<p class="p1"><span class="Apple-converted-space">            </span>colors: ['Grey', 'Teal', 'Black', 'Orange'],</p>
-<p class="p1"><span class="Apple-converted-space">            </span>occasions: ['casual'],</p>
-<p class="p1"><span class="Apple-converted-space">            </span>imageUrl: 'https://placehold.co/100x100/9CA3AF/0284C7?text=Wave+Runner'</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}, {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>id: 6,</p>
-<p class="p1"><span class="Apple-converted-space">            </span>name: "New Balance 990v5 'Grey'",</p>
-<p class="p1"><span class="Apple-converted-space">            </span>colors: ['Grey', 'White'],</p>
-<p class="p1"><span class="Apple-converted-space">            </span>occasions: ['casual', 'athleisure', 'work'],</p>
-<p class="p1"><span class="Apple-converted-space">            </span>imageUrl: 'https://placehold.co/100x100/D1D5DB/111827?text=NB+990v5'</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}, {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>id: 7,</p>
-<p class="p1"><span class="Apple-converted-space">            </span>name: "Adidas Samba OG",</p>
-<p class="p1"><span class="Apple-converted-space">            </span>colors: ['White', 'Black', 'Grey'],</p>
-<p class="p1"><span class="Apple-converted-space">            </span>occasions: ['casual'],</p>
-<p class="p1"><span class="Apple-converted-space">            </span>imageUrl: 'https://placehold.co/100x100/FFFFFF/111827?text=Samba'</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}, {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>id: 8,</p>
-<p class="p1"><span class="Apple-converted-space">            </span>name: "Converse Chuck 70 High",</p>
-<p class="p1"><span class="Apple-converted-space">            </span>colors: ['Black', 'Sail'],</p>
-<p class="p1"><span class="Apple-converted-space">            </span>occasions: ['casual'],</p>
-<p class="p1"><span class="Apple-converted-space">            </span>imageUrl: 'https://placehold.co/100x100/111827/FFFFFF?text=Chuck+70'</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}, {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>id: 9,</p>
-<p class="p1"><span class="Apple-converted-space">            </span>name: "Salomon XT-6",</p>
-<p class="p1"><span class="Apple-converted-space">            </span>colors: ['Black', 'White', 'Grey'],</p>
-<p class="p1"><span class="Apple-converted-space">            </span>occasions: ['casual', 'athleisure'],</p>
-<p class="p1"><span class="Apple-converted-space">            </span>imageUrl: 'https://placehold.co/100x100/4B5563/F9FAFB?text=XT-6'</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}, {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>id: 10,</p>
-<p class="p1"><span class="Apple-converted-space">            </span>name: "Common Projects Achilles Low 'White'",</p>
-<p class="p1"><span class="Apple-converted-space">            </span>colors: ['White'],</p>
-<p class="p1"><span class="Apple-converted-space">            </span>occasions: ['casual', 'work'],</p>
-<p class="p1"><span class="Apple-converted-space">            </span>imageUrl: 'https://placehold.co/100x100/FFFFFF/4B5563?text=CP+Achilles'</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}, {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>id: 11,</p>
-<p class="p1"><span class="Apple-converted-space">            </span>name: "Travis Scott x AJ1 'Mocha'",</p>
-<p class="p1"><span class="Apple-converted-space">            </span>colors: ['Mocha', 'Sail', 'Black'],</p>
-<p class="p1"><span class="Apple-converted-space">            </span>occasions: ['casual'],</p>
-<p class="p1"><span class="Apple-converted-space">            </span>imageUrl: 'https://placehold.co/100x100/854d27/f5f5f4?text=Mocha+AJ1'</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}, {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>id: 12,</p>
-<p class="p1"><span class="Apple-converted-space">            </span>name: "Nike Dunk Low 'University Blue'",</p>
-<p class="p1"><span class="Apple-converted-space">            </span>colors: ['University Blue', 'White'],</p>
-<p class="p1"><span class="Apple-converted-space">            </span>occasions: ['casual'],</p>
-<p class="p1"><span class="Apple-converted-space">            </span>imageUrl: 'https://placehold.co/100x100/60a5fa/FFFFFF?text=UNC+Dunk'</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}];</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>const CLOTHING_DB = [{</p>
-<p class="p1"><span class="Apple-converted-space">            </span>id: 101,</p>
-<p class="p1"><span class="Apple-converted-space">            </span>type: 'top',</p>
-<p class="p1"><span class="Apple-converted-space">            </span>name: 'White T-Shirt',</p>
-<p class="p1"><span class="Apple-converted-space">            </span>colors: ['White', 'Sail'],</p>
-<p class="p1"><span class="Apple-converted-space">            </span>occasions: ['casual', 'athleisure', 'work'],</p>
-<p class="p1"><span class="Apple-converted-space">            </span>imageUrl: 'https://placehold.co/150x150/FFFFFF/333333?text=White+Tee'</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}, {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>id: 102,</p>
-<p class="p1"><span class="Apple-converted-space">            </span>type: 'top',</p>
-<p class="p1"><span class="Apple-converted-space">            </span>name: 'Black Hoodie',</p>
-<p class="p1"><span class="Apple-converted-space">            </span>colors: ['Black'],</p>
-<p class="p1"><span class="Apple-converted-space">            </span>occasions: ['casual', 'athleisure'],</p>
-<p class="p1"><span class="Apple-converted-space">            </span>imageUrl: 'https://placehold.co/150x150/111827/FFFFFF?text=Black+Hoodie'</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}, {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>id: 103,</p>
-<p class="p1"><span class="Apple-converted-space">            </span>type: 'top',</p>
-<p class="p1"><span class="Apple-converted-space">            </span>name: 'Grey Sweatshirt',</p>
-<p class="p1"><span class="Apple-converted-space">            </span>colors: ['Grey'],</p>
-<p class="p1"><span class="Apple-converted-space">            </span>occasions: ['casual', 'athleisure'],</p>
-<p class="p1"><span class="Apple-converted-space">            </span>imageUrl: 'https://placehold.co/150x150/9CA3AF/FFFFFF?text=Grey+Sweatshirt'</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}, {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>id: 104,</p>
-<p class="p1"><span class="Apple-converted-space">            </span>type: 'top',</p>
-<p class="p1"><span class="Apple-converted-space">            </span>name: 'Blue Oxford Shirt',</p>
-<p class="p1"><span class="Apple-converted-space">            </span>colors: ['University Blue', 'Blue'],</p>
-<p class="p1"><span class="Apple-converted-space">            </span>occasions: ['work', 'casual'],</p>
-<p class="p1"><span class="Apple-converted-space">            </span>imageUrl: 'https://placehold.co/150x150/60a5fa/FFFFFF?text=Blue+Shirt'</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}, {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>id: 105,</p>
-<p class="p1"><span class="Apple-converted-space">            </span>type: 'top',</p>
-<p class="p1"><span class="Apple-converted-space">            </span>name: 'Red Flannel',</p>
-<p class="p1"><span class="Apple-converted-space">            </span>colors: ['Red', 'Black'],</p>
-<p class="p1"><span class="Apple-converted-space">            </span>occasions: ['casual'],</p>
-<p class="p1"><span class="Apple-converted-space">            </span>imageUrl: 'https://placehold.co/150x150/DC2626/111827?text=Red+Flannel'</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}, {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>id: 201,</p>
-<p class="p1"><span class="Apple-converted-space">            </span>type: 'bottom',</p>
-<p class="p1"><span class="Apple-converted-space">            </span>name: 'Black Jeans',</p>
-<p class="p1"><span class="Apple-converted-space">            </span>colors: ['Black'],</p>
-<p class="p1"><span class="Apple-converted-space">            </span>occasions: ['casual', 'work'],</p>
-<p class="p1"><span class="Apple-converted-space">            </span>imageUrl: 'https://placehold.co/150x150/1F2937/FFFFFF?text=Black+Jeans'</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}, {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>id: 202,</p>
-<p class="p1"><span class="Apple-converted-space">            </span>type: 'bottom',</p>
-<p class="p1"><span class="Apple-converted-space">            </span>name: 'Light Wash Jeans',</p>
-<p class="p1"><span class="Apple-converted-space">            </span>colors: ['University Blue', 'Blue'],</p>
-<p class="p1"><span class="Apple-converted-space">            </span>occasions: ['casual'],</p>
-<p class="p1"><span class="Apple-converted-space">            </span>imageUrl: 'https://placehold.co/150x150/A5B4FC/111827?text=Light+Jeans'</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}, {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>id: 203,</p>
-<p class="p1"><span class="Apple-converted-space">            </span>type: 'bottom',</p>
-<p class="p1"><span class="Apple-converted-space">            </span>name: 'Grey Sweatpants',</p>
-<p class="p1"><span class="Apple-converted-space">            </span>colors: ['Grey'],</p>
-<p class="p1"><span class="Apple-converted-space">            </span>occasions: ['casual', 'athleisure'],</p>
-<p class="p1"><span class="Apple-converted-space">            </span>imageUrl: 'https://placehold.co/150x150/B0B0B0/111827?text=Grey+Sweats'</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}, {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>id: 204,</p>
-<p class="p1"><span class="Apple-converted-space">            </span>type: 'bottom',</p>
-<p class="p1"><span class="Apple-converted-space">            </span>name: 'Khaki Chinos',</p>
-<p class="p1"><span class="Apple-converted-space">            </span>colors: ['Mocha', 'Sail'],</p>
-<p class="p1"><span class="Apple-converted-space">            </span>occasions: ['casual', 'work'],</p>
-<p class="p1"><span class="Apple-converted-space">            </span>imageUrl: 'https://placehold.co/150x150/D2B48C/111827?text=Khakis'</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}, {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>id: 205,</p>
-<p class="p1"><span class="Apple-converted-space">            </span>type: 'bottom',</p>
-<p class="p1"><span class="Apple-converted-space">            </span>name: 'Black Tech Shorts',</p>
-<p class="p1"><span class="Apple-converted-space">            </span>colors: ['Black'],</p>
-<p class="p1"><span class="Apple-converted-space">            </span>occasions: ['athleisure'],</p>
-<p class="p1"><span class="Apple-converted-space">            </span>imageUrl: 'https://placehold.co/150x150/222222/FFFFFF?text=Black+Shorts'</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}];</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>const COLOR_MAP = {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>'Black': [20, 20, 20],</p>
-<p class="p1"><span class="Apple-converted-space">            </span>'White': [250, 250, 250],</p>
-<p class="p1"><span class="Apple-converted-space">            </span>'Sail': [245, 245, 235],</p>
-<p class="p1"><span class="Apple-converted-space">            </span>'Red': [215, 30, 45],</p>
-<p class="p1"><span class="Apple-converted-space">            </span>'Green': [0, 128, 0],</p>
-<p class="p1"><span class="Apple-converted-space">            </span>'Blue': [0, 0, 255],</p>
-<p class="p1"><span class="Apple-converted-space">            </span>'Royal Blue': [65, 105, 225],</p>
-<p class="p1"><span class="Apple-converted-space">            </span>'University Blue': [96, 165, 250],</p>
-<p class="p1"><span class="Apple-converted-space">            </span>'Grey': [128, 128, 128],</p>
-<p class="p1"><span class="Apple-converted-space">            </span>'Yellow': [255, 255, 0],</p>
-<p class="p1"><span class="Apple-converted-space">            </span>'Mocha': [133, 77, 39],</p>
-<p class="p1"><span class="Apple-converted-space">            </span>'Teal': [0, 128, 128],</p>
-<p class="p1"><span class="Apple-converted-space">            </span>'Orange': [255, 165, 0]</p>
-<p class="p1"><span class="Apple-converted-space">        </span>};</p>
-<p class="p1"><span class="Apple-converted-space">        </span>const OCCASIONS = ['casual', 'athleisure', 'work'];</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>// DOM Element References</p>
-<p class="p1"><span class="Apple-converted-space">        </span>const allViews = {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>stylist: document.getElementById('stylist-view'),</p>
-<p class="p1"><span class="Apple-converted-space">            </span>closet: document.getElementById('closet-view'),</p>
-<p class="p1"><span class="Apple-converted-space">            </span>outfitBuilder: document.getElementById('outfit-builder-view'),</p>
-<p class="p1"><span class="Apple-converted-space">            </span>browse: document.getElementById('browse-view')</p>
-<p class="p1"><span class="Apple-converted-space">        </span>};</p>
-<p class="p1"><span class="Apple-converted-space">        </span>const closetItemsContainer = document.getElementById('closet-items-container');</p>
-<p class="p1"><span class="Apple-converted-space">        </span>const imageUpload = document.getElementById('image-upload');</p>
-<p class="p1"><span class="Apple-converted-space">        </span>const imagePreview = document.getElementById('image-preview');</p>
-<p class="p1"><span class="Apple-converted-space">        </span>const imagePlaceholder = document.getElementById('image-placeholder');</p>
-<p class="p1"><span class="Apple-converted-space">        </span>const imagePreviewContainer = document.getElementById('image-preview-container');</p>
-<p class="p1"><span class="Apple-converted-space">        </span>const analyzeButton = document.getElementById('analyze-button');</p>
-<p class="p1"><span class="Apple-converted-space">        </span>const resultsContainer = document.getElementById('results-container');</p>
-<p class="p1"><span class="Apple-converted-space">        </span>const occasionFilters = document.getElementById('occasion-filters');</p>
-<p class="p1"><span class="Apple-converted-space">        </span>const addSneakerModal = document.getElementById('add-sneaker-modal');</p>
-<p class="p1"><span class="Apple-converted-space">        </span>const modalTitle = document.getElementById('modal-title');</p>
-<p class="p1"><span class="Apple-converted-space">        </span>const modalImagePreview = document.getElementById('modal-image-preview');</p>
-<p class="p1"><span class="Apple-converted-space">        </span>const sneakerImageUpload = document.getElementById('sneaker-image-upload');</p>
-<p class="p1"><span class="Apple-converted-space">        </span>const sneakerIdInput = document.getElementById('sneaker-id');</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>const colorThief = new ColorThief();</p>
-<p class="p1"><span class="Apple-converted-space">        </span>let uploadedImage = null;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>let selectedOccasion = 'casual';</p>
-<p class="p1"><span class="Apple-converted-space">        </span>let myCloset = [];</p>
-<p class="p1"><span class="Apple-converted-space">        </span>let customSneakers = [];</p>
-<p class="p1"><span class="Apple-converted-space">        </span>let resizedSneakerImageUrl = null;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>// --- 2. AI &amp; APP LOGIC ---</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>function resizeImage(file, maxWidth, maxHeight) {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>return new Promise((resolve, reject) =&gt; {</p>
-<p class="p1"><span class="Apple-converted-space">                </span>const reader = new FileReader();</p>
-<p class="p1"><span class="Apple-converted-space">                </span>reader.onload = (event) =&gt; {</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>const img = new Image();</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>img.onload = () =&gt; {</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>const canvas = document.createElement('canvas');</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>let width = img.width;</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>let height = img.height;</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>if (width &gt; height) {</p>
-<p class="p1"><span class="Apple-converted-space">                            </span>if (width &gt; maxWidth) {</p>
-<p class="p1"><span class="Apple-converted-space">                                </span>height *= maxWidth / width;</p>
-<p class="p1"><span class="Apple-converted-space">                                </span>width = maxWidth;</p>
-<p class="p1"><span class="Apple-converted-space">                            </span>}</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>} else {</p>
-<p class="p1"><span class="Apple-converted-space">                            </span>if (height &gt; maxHeight) {</p>
-<p class="p1"><span class="Apple-converted-space">                                </span>width *= maxHeight / height;</p>
-<p class="p1"><span class="Apple-converted-space">                                </span>height = maxHeight;</p>
-<p class="p1"><span class="Apple-converted-space">                            </span>}</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>}</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>canvas.width = width;</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>canvas.height = height;</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>const ctx = canvas.getContext('2d');</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>ctx.drawImage(img, 0, 0, width, height);</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>resolve(canvas.toDataURL('image/jpeg', 0.8));</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>};</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>img.onerror = reject;</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>img.src = event.target.result;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>};</p>
-<p class="p1"><span class="Apple-converted-space">                </span>reader.onerror = reject;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>reader.readAsDataURL(file);</p>
-<p class="p1"><span class="Apple-converted-space">            </span>});</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>function loadData() {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>myCloset = JSON.parse(localStorage.getItem('mySneakerCloset') || '[]');</p>
-<p class="p1"><span class="Apple-converted-space">            </span>customSneakers = JSON.parse(localStorage.getItem('myCustomSneakers') || '[]');</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>function saveData() {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>localStorage.setItem('mySneakerCloset', JSON.stringify(myCloset));</p>
-<p class="p1"><span class="Apple-converted-space">            </span>localStorage.setItem('myCustomSneakers', JSON.stringify(customSneakers));</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>function getFullSneakerList() {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>return [...SNEAKER_DB, ...customSneakers];</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>function addToCloset(sneakerId) {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>if (!myCloset.includes(sneakerId)) {</p>
-<p class="p1"><span class="Apple-converted-space">                </span>myCloset.push(sneakerId);</p>
-<p class="p1"><span class="Apple-converted-space">            </span>}</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>function removeFromCloset(sneakerId) {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>myCloset = myCloset.filter(id =&gt; id !== sneakerId);</p>
-<p class="p1"><span class="Apple-converted-space">            </span>customSneakers = customSneakers.filter(s =&gt; s.id !== sneakerId);</p>
-<p class="p1"><span class="Apple-converted-space">            </span>saveData();</p>
-<p class="p1"><span class="Apple-converted-space">            </span>renderCloset();</p>
-<p class="p1"><span class="Apple-converted-space">            </span>renderOutfitBuilderSelection();</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>function renderCloset() {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>closetItemsContainer.innerHTML = '';</p>
-<p class="p1"><span class="Apple-converted-space">            </span>const allClosetItems = getFullSneakerList().filter(s =&gt; myCloset.includes(s.id));</p>
-<p class="p1"><span class="Apple-converted-space">            </span>if (allClosetItems.length === 0) {</p>
-<p class="p1"><span class="Apple-converted-space">                </span>closetItemsContainer.innerHTML = `&lt;p class="text-center text-gray-500"&gt;Your closet is empty.&lt;/p&gt;`;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>return;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>}</p>
-<p class="p1"><span class="Apple-converted-space">            </span>allClosetItems.forEach(sneaker =&gt; {</p>
-<p class="p1"><span class="Apple-converted-space">                </span>closetItemsContainer.innerHTML += `</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>&lt;div class="bg-gray-50 p-3 rounded-lg flex items-center justify-between"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>&lt;div class="flex items-center space-x-4"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                            </span>&lt;img src="${sneaker.imageUrl}" alt="${sneaker.name}" class="w-12 h-12 rounded-md object-cover bg-gray-200"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                            </span>&lt;span class="font-medium"&gt;${sneaker.name}&lt;/span&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>&lt;div class="flex space-x-2"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                            </span>&lt;button class="edit-btn text-blue-500 hover:text-blue-700 font-semibold text-sm" data-id="${sneaker.id}"&gt;Edit&lt;/button&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                            </span>&lt;button class="remove-btn text-red-500 hover:text-red-700 font-semibold text-sm" data-id="${sneaker.id}"&gt;Remove&lt;/button&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>&lt;/div&gt;`;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>});</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>function openEditModal(sneakerId) {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>const sneaker = getFullSneakerList().find(s =&gt; s.id === sneakerId);</p>
-<p class="p1"><span class="Apple-converted-space">            </span>if (!sneaker) return;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>modalTitle.textContent = 'Edit Sneaker';</p>
-<p class="p1"><span class="Apple-converted-space">            </span>sneakerIdInput.value = sneaker.id;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>document.getElementById('sneaker-name').value = sneaker.name;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>document.querySelectorAll('#color-checkboxes input, #occasion-checkboxes input').forEach(box =&gt; box.checked = false);</p>
-<p class="p1"><span class="Apple-converted-space">            </span>sneaker.colors.forEach(color =&gt; {</p>
-<p class="p1"><span class="Apple-converted-space">                </span>const cb = document.querySelector(`#color-checkboxes input[value="${color}"]`);</p>
-<p class="p1"><span class="Apple-converted-space">                </span>if (cb) cb.checked = true;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>});</p>
-<p class="p1"><span class="Apple-converted-space">            </span>sneaker.occasions.forEach(occ =&gt; {</p>
-<p class="p1"><span class="Apple-converted-space">                </span>const cb = document.querySelector(`#occasion-checkboxes input[value="${occ}"]`);</p>
-<p class="p1"><span class="Apple-converted-space">                </span>if (cb) cb.checked = true;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>});</p>
-<p class="p1"><span class="Apple-converted-space">            </span>modalImagePreview.src = sneaker.imageUrl;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>modalImagePreview.classList.remove('hidden');</p>
-<p class="p1"><span class="Apple-converted-space">            </span>resizedSneakerImageUrl = sneaker.imageUrl;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>sneakerImageUpload.required = false;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>addSneakerModal.classList.remove('hidden');</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>function getColorDistance(rgb1, rgb2) {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>let [r1, g1, b1] = rgb1;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>let [r2, g2, b2] = rgb2;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>return Math.sqrt(Math.pow(r1 - r2, 2) + Math.pow(g1 - g2, 2) + Math.pow(b1 - b2, 2));</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>function getColorName(rgbArray) {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>let closestColorName = '';</p>
-<p class="p1"><span class="Apple-converted-space">            </span>let minDistance = Infinity;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>for (const colorName in COLOR_MAP) {</p>
-<p class="p1"><span class="Apple-converted-space">                </span>const distance = getColorDistance(rgbArray, COLOR_MAP[colorName]);</p>
-<p class="p1"><span class="Apple-converted-space">                </span>if (distance &lt; minDistance) {</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>minDistance = distance;</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>closestColorName = colorName;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>}</p>
-<p class="p1"><span class="Apple-converted-space">            </span>}</p>
-<p class="p1"><span class="Apple-converted-space">            </span>return closestColorName;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>function findSneakers(colorNames, occasion) {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>const recs = new Set();</p>
-<p class="p1"><span class="Apple-converted-space">            </span>const lowerCaseColors = colorNames.map(n =&gt; n.toLowerCase());</p>
-<p class="p1"><span class="Apple-converted-space">            </span>const filteredDB = getFullSneakerList().filter(s =&gt; s.occasions.includes(occasion));</p>
-<p class="p1"><span class="Apple-converted-space">            </span>filteredDB.forEach(sneaker =&gt; {</p>
-<p class="p1"><span class="Apple-converted-space">                </span>if (sneaker.colors.some(sc =&gt; lowerCaseColors.includes(sc.toLowerCase()))) recs.add(sneaker);</p>
-<p class="p1"><span class="Apple-converted-space">            </span>});</p>
-<p class="p1"><span class="Apple-converted-space">            </span>return Array.from(recs);</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>function displayResults(recommendations, detectedPaletteRgb) {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>resultsContainer.innerHTML = '';</p>
-<p class="p1"><span class="Apple-converted-space">            </span>sessionStorage.setItem('lastResults', JSON.stringify(recommendations));</p>
-<p class="p1"><span class="Apple-converted-space">            </span>sessionStorage.setItem('lastPalette', JSON.stringify(detectedPaletteRgb));</p>
-<p class="p1"><span class="Apple-converted-space">            </span>resultsContainer.innerHTML = `&lt;h2 class="text-lg font-semibold text-gray-800 mb-2 text-center"&gt;Detected Palette&lt;/h2&gt;`;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>const paletteDiv = document.createElement('div');</p>
-<p class="p1"><span class="Apple-converted-space">            </span>paletteDiv.className = 'flex justify-center items-center space-x-2 mb-4';</p>
-<p class="p1"><span class="Apple-converted-space">            </span>detectedPaletteRgb.forEach(rgb =&gt; {</p>
-<p class="p1"><span class="Apple-converted-space">                </span>paletteDiv.innerHTML += `&lt;div class="w-8 h-8 rounded-full border-2 border-white shadow" style="background-color: rgb(${rgb[0]}, ${rgb[1]}, ${rgb[2]})"&gt;&lt;/div&gt;`;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>});</p>
-<p class="p1"><span class="Apple-converted-space">            </span>resultsContainer.appendChild(paletteDiv);</p>
-<p class="p1"><span class="Apple-converted-space">            </span>if (recommendations.length &gt; 0) {</p>
-<p class="p1"><span class="Apple-converted-space">                </span>const list = document.createElement('ul');</p>
-<p class="p1"><span class="Apple-converted-space">                </span>list.className = 'space-y-3';</p>
-<p class="p1"><span class="Apple-converted-space">                </span>recommendations.forEach(sneaker =&gt; {</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>const inCloset = myCloset.includes(sneaker.id);</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>const badge = inCloset ? `&lt;span class="ml-2 text-xs font-semibold bg-green-100 text-green-800 px-2 py-1 rounded-full"&gt;In Closet&lt;/span&gt;` : '';</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>list.innerHTML += `&lt;li class="bg-gray-50 p-3 rounded-lg flex items-center justify-between transition hover:bg-gray-100"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>&lt;div class="flex items-center space-x-4"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                            </span>&lt;img src="${sneaker.imageUrl}" alt="${sneaker.name}" class="w-16 h-16 rounded-md object-cover bg-gray-200"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                            </span>&lt;div&gt;&lt;span class="font-medium"&gt;${sneaker.name}&lt;/span&gt;${badge}&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>&lt;button class="add-btn bg-blue-100 text-blue-700 hover:bg-blue-200 font-bold text-lg w-8 h-8 rounded-full disabled:opacity-50 disabled:cursor-not-allowed" data-id="${sneaker.id}" ${inCloset ? 'disabled' : ''}&gt;+&lt;/button&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>&lt;/li&gt;`;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>});</p>
-<p class="p1"><span class="Apple-converted-space">                </span>resultsContainer.appendChild(list);</p>
-<p class="p1"><span class="Apple-converted-space">            </span>} else {</p>
-<p class="p1"><span class="Apple-converted-space">                </span>resultsContainer.innerHTML += `&lt;p class="text-center text-gray-500 bg-gray-50 p-3 rounded-lg"&gt;No sneakers found.&lt;/p&gt;`;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>}</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>function populateModalCheckboxes() {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>document.getElementById('color-checkboxes').innerHTML = Object.keys(COLOR_MAP).sort().map(c =&gt; `&lt;label class="flex items-center space-x-2"&gt;&lt;input type="checkbox" name="colors" value="${c}" class="rounded border-gray-300"&gt;&lt;span&gt;${c}&lt;/span&gt;&lt;/label&gt;`).join('');</p>
-<p class="p1"><span class="Apple-converted-space">            </span>document.getElementById('occasion-checkboxes').innerHTML = OCCASIONS.map(o =&gt; `&lt;label class="flex items-center space-x-2"&gt;&lt;input type="checkbox" name="occasions" value="${o}" class="rounded border-gray-300"&gt;&lt;span class="capitalize"&gt;${o}&lt;/span&gt;&lt;/label&gt;`).join('');</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>// --- BROWSE &amp; OUTFIT BUILDER LOGIC ---</p>
-<p class="p1"><span class="Apple-converted-space">        </span>function renderBrowseView(searchTerm = '') {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>const container = document.getElementById('browse-items-container');</p>
-<p class="p1"><span class="Apple-converted-space">            </span>container.innerHTML = '';</p>
-<p class="p1"><span class="Apple-converted-space">            </span>const filteredSneakers = SNEAKER_DB.filter(s =&gt; s.name.toLowerCase().includes(searchTerm.toLowerCase()));</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">            </span>if (filteredSneakers.length === 0) {</p>
-<p class="p1"><span class="Apple-converted-space">                </span>container.innerHTML = `&lt;p class="text-center text-gray-500"&gt;No sneakers found.&lt;/p&gt;`;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>return;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">            </span>filteredSneakers.forEach(sneaker =&gt; {</p>
-<p class="p1"><span class="Apple-converted-space">                </span>const inCloset = myCloset.includes(sneaker.id);</p>
-<p class="p1"><span class="Apple-converted-space">                </span>container.innerHTML += `</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>&lt;div class="bg-gray-50 p-3 rounded-lg flex items-center justify-between"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>&lt;div class="flex items-center space-x-4"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                            </span>&lt;img src="${sneaker.imageUrl}" alt="${sneaker.name}" class="w-12 h-12 rounded-md object-cover bg-gray-200"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                            </span>&lt;span class="font-medium"&gt;${sneaker.name}&lt;/span&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>&lt;button class="add-btn bg-blue-100 text-blue-700 hover:bg-blue-200 font-bold text-lg w-8 h-8 rounded-full disabled:opacity-50 disabled:cursor-not-allowed" data-id="${sneaker.id}" ${inCloset ? 'disabled' : ''}&gt;+&lt;/button&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>&lt;/div&gt;`;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>});</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>function renderOutfitBuilderSelection() {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>const container = document.getElementById('outfit-builder-closet-items');</p>
-<p class="p1"><span class="Apple-converted-space">            </span>container.innerHTML = '';</p>
-<p class="p1"><span class="Apple-converted-space">            </span>const closetSneakers = getFullSneakerList().filter(s =&gt; myCloset.includes(s.id));</p>
-<p class="p1"><span class="Apple-converted-space">            </span>if (closetSneakers.length === 0) {</p>
-<p class="p1"><span class="Apple-converted-space">                </span>container.innerHTML = `&lt;p class="text-center text-gray-500 col-span-3"&gt;Add sneakers to your closet to use this feature.&lt;/p&gt;`;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>return;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>}</p>
-<p class="p1"><span class="Apple-converted-space">            </span>closetSneakers.forEach(sneaker =&gt; {</p>
-<p class="p1"><span class="Apple-converted-space">                </span>container.innerHTML += `</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>&lt;button class="outfit-sneaker-btn text-center" data-id="${sneaker.id}"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>&lt;img src="${sneaker.imageUrl}" alt="${sneaker.name}" class="w-full h-auto rounded-lg object-cover aspect-square bg-gray-200"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>&lt;p class="text-xs font-medium mt-1"&gt;${sneaker.name}&lt;/p&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>&lt;/button&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>`;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>});</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>function findOutfits(sneaker) {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>const outfits = [];</p>
-<p class="p1"><span class="Apple-converted-space">            </span>const sneakerColors = sneaker.colors.map(c =&gt; c.toLowerCase());</p>
-<p class="p1"><span class="Apple-converted-space">            </span>for (const occasion of sneaker.occasions) {</p>
-<p class="p1"><span class="Apple-converted-space">                </span>const tops = CLOTHING_DB.filter(c =&gt; c.type === 'top' &amp;&amp; c.occasions.includes(occasion) &amp;&amp; c.colors.some(cc =&gt; sneakerColors.includes(cc.toLowerCase())));</p>
-<p class="p1"><span class="Apple-converted-space">                </span>const bottoms = CLOTHING_DB.filter(c =&gt; c.type === 'bottom' &amp;&amp; c.occasions.includes(occasion) &amp;&amp; c.colors.some(cc =&gt; sneakerColors.includes(cc.toLowerCase())));</p>
-<p class="p1"><span class="Apple-converted-space">                </span>if (tops.length &gt; 0 &amp;&amp; bottoms.length &gt; 0) {</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>outfits.push({</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>occasion,</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>top: tops[0],</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>bottom: bottoms[0]</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>});</p>
-<p class="p1"><span class="Apple-converted-space">                </span>}</p>
-<p class="p1"><span class="Apple-converted-space">            </span>}</p>
-<p class="p1"><span class="Apple-converted-space">            </span>return outfits;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>function displayOutfitResults(sneaker, outfits) {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>const container = document.getElementById('outfit-builder-results');</p>
-<p class="p1"><span class="Apple-converted-space">            </span>container.innerHTML = `</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;div class="text-center mb-4"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>&lt;button id="back-to-selection-btn" class="text-blue-600 font-semibold"&gt;&amp;larr; Back to Selection&lt;/button&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>&lt;h2 class="text-lg font-bold"&gt;Styling: ${sneaker.name}&lt;/h2&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;/div&gt;`;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>if (outfits.length === 0) {</p>
-<p class="p1"><span class="Apple-converted-space">                </span>container.innerHTML += `&lt;p class="text-center text-gray-500"&gt;No outfit ideas found.&lt;/p&gt;`;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>return;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>}</p>
-<p class="p1"><span class="Apple-converted-space">            </span>outfits.forEach(outfit =&gt; {</p>
-<p class="p1"><span class="Apple-converted-space">                </span>container.innerHTML += `</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>&lt;div class="bg-gray-50 rounded-lg p-4 mb-4"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>&lt;h3 class="font-semibold text-center capitalize mb-2"&gt;${outfit.occasion} Look&lt;/h3&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>&lt;div class="flex justify-center space-x-4"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                            </span>&lt;div class="text-center"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                                </span>&lt;img src="${outfit.top.imageUrl}" alt="${outfit.top.name}" class="w-24 h-24 rounded-md object-cover bg-gray-200"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                                </span>&lt;p class="text-xs mt-1"&gt;${outfit.top.name}&lt;/p&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                            </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                            </span>&lt;div class="text-center"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                                </span>&lt;img src="${outfit.bottom.imageUrl}" alt="${outfit.bottom.name}" class="w-24 h-24 rounded-md object-cover bg-gray-200"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                                </span>&lt;p class="text-xs mt-1"&gt;${outfit.bottom.name}&lt;/p&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                            </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>&lt;/div&gt;`;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>});</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>// --- 3. EVENT LISTENERS AND INITIALIZATION ---</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>document.addEventListener('DOMContentLoaded', () =&gt; {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>loadData();</p>
-<p class="p1"><span class="Apple-converted-space">            </span>renderCloset();</p>
-<p class="p1"><span class="Apple-converted-space">            </span>populateModalCheckboxes();</p>
-<p class="p1"><span class="Apple-converted-space">            </span>analyzeButton.disabled = true;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">            </span>// Tab switching</p>
-<p class="p1"><span class="Apple-converted-space">            </span>document.querySelectorAll('.tab-btn').forEach(btn =&gt; {</p>
-<p class="p1"><span class="Apple-converted-space">                </span>btn.addEventListener('click', () =&gt; {</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>const tab = btn.dataset.tab;</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>document.querySelectorAll('.tab-btn').forEach(b =&gt; b.classList.replace('active', 'inactive'));</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>btn.classList.replace('inactive', 'active');</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>Object.values(allViews).forEach(view =&gt; view.classList.add('hidden'));</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>allViews[tab].classList.remove('hidden');</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">                    </span>if (tab === 'closet') renderCloset();</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>if (tab === 'browse') renderBrowseView();</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>if (tab === 'outfitBuilder') {</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>document.getElementById('outfit-builder-selection').classList.remove('hidden');</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>document.getElementById('outfit-builder-results').classList.add('hidden');</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>renderOutfitBuilderSelection();</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>}</p>
-<p class="p1"><span class="Apple-converted-space">                </span>});</p>
-<p class="p1"><span class="Apple-converted-space">            </span>});</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">            </span>// Image upload</p>
-<p class="p1"><span class="Apple-converted-space">            </span>imageUpload.addEventListener('change', (event) =&gt; {</p>
-<p class="p1"><span class="Apple-converted-space">                </span>const file = event.target.files[0];</p>
-<p class="p1"><span class="Apple-converted-space">                </span>if (file) {</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>const reader = new FileReader();</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>reader.onload = (e) =&gt; {</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>imagePreview.src = e.target.result;</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>uploadedImage = imagePreview;</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>imagePreviewContainer.classList.remove('hidden');</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>imagePlaceholder.classList.add('hidden');</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>analyzeButton.disabled = false;</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>resultsContainer.innerHTML = '';</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>};</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>reader.readAsDataURL(file);</p>
-<p class="p1"><span class="Apple-converted-space">                </span>}</p>
-<p class="p1"><span class="Apple-converted-space">            </span>});</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">            </span>// Occasion filter</p>
-<p class="p1"><span class="Apple-converted-space">            </span>occasionFilters.addEventListener('click', (event) =&gt; {</p>
-<p class="p1"><span class="Apple-converted-space">                </span>if (event.target.tagName === 'BUTTON') {</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>selectedOccasion = event.target.dataset.occasion;</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>document.querySelectorAll('#occasion-filters .filter-btn').forEach(btn =&gt; {</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>btn.classList.replace('active', 'inactive');</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>if (btn.dataset.occasion === selectedOccasion) btn.classList.add('active');</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>});</p>
-<p class="p1"><span class="Apple-converted-space">                </span>}</p>
-<p class="p1"><span class="Apple-converted-space">            </span>});</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">            </span>// Analyze button</p>
-<p class="p1"><span class="Apple-converted-space">            </span>analyzeButton.addEventListener('click', () =&gt; {</p>
-<p class="p1"><span class="Apple-converted-space">                </span>if (!uploadedImage) return;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>resultsContainer.innerHTML = `&lt;div class="mx-auto loader"&gt;&lt;/div&gt;`;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>analyzeButton.disabled = true;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>analyzeButton.textContent = 'Analyzing...';</p>
-<p class="p1"><span class="Apple-converted-space">                </span>setTimeout(() =&gt; {</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>try {</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>const paletteRgb = colorThief.getPalette(uploadedImage, 3);</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>const detectedColorNames = [...new Set(paletteRgb.map(rgb =&gt; getColorName(rgb)))];</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>const recommendations = findSneakers(detectedColorNames, selectedOccasion);</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>displayResults(recommendations, paletteRgb);</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>} catch (error) {</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>console.error("Error analyzing image:", error);</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>resultsContainer.innerHTML = `&lt;p class="text-center text-red-500"&gt;Could not analyze image.&lt;/p&gt;`;</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>} finally {</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>analyzeButton.disabled = false;</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>analyzeButton.textContent = '3. Analyze Outfit';</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>}</p>
-<p class="p1"><span class="Apple-converted-space">                </span>}, 100);</p>
-<p class="p1"><span class="Apple-converted-space">            </span>});</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">            </span>// Dynamic event listeners</p>
-<p class="p1"><span class="Apple-converted-space">            </span>document.body.addEventListener('click', event =&gt; {</p>
-<p class="p1"><span class="Apple-converted-space">                </span>const target = event.target;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>if (target.closest('.add-btn')) {</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>const sneakerId = target.closest('.add-btn').dataset.id.startsWith('custom-') ? target.closest('.add-btn').dataset.id : parseInt(target.closest('.add-btn').dataset.id, 10);</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>addToCloset(sneakerId);</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>saveData();</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>const lastResults = JSON.parse(sessionStorage.getItem('lastResults') || '[]');</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>const lastPalette = JSON.parse(sessionStorage.getItem('lastPalette') || '[]');</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>if (lastResults.length &gt; 0 &amp;&amp; !allViews.stylist.classList.contains('hidden')) displayResults(lastResults, lastPalette);</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>if (!allViews.browse.classList.contains('hidden')) renderBrowseView(document.getElementById('browse-search').value);</p>
-<p class="p1"><span class="Apple-converted-space">                </span>}</p>
-<p class="p1"><span class="Apple-converted-space">                </span>if (target.closest('.remove-btn')) {</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>const sneakerId = target.closest('.remove-btn').dataset.id.startsWith('custom-') ? target.closest('.remove-btn').dataset.id : parseInt(target.closest('.remove-btn').dataset.id, 10);</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>removeFromCloset(sneakerId);</p>
-<p class="p1"><span class="Apple-converted-space">                </span>}</p>
-<p class="p1"><span class="Apple-converted-space">                </span>if (target.closest('.edit-btn')) {</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>const sneakerId = target.closest('.edit-btn').dataset.id.startsWith('custom-') ? target.closest('.edit-btn').dataset.id : parseInt(target.closest('.edit-btn').dataset.id, 10);</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>openEditModal(sneakerId);</p>
-<p class="p1"><span class="Apple-converted-space">                </span>}</p>
-<p class="p1"><span class="Apple-converted-space">                </span>if (target.closest('.outfit-sneaker-btn')) {</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>const sneakerId = target.closest('.outfit-sneaker-btn').dataset.id.startsWith('custom-') ? target.closest('.outfit-sneaker-btn').dataset.id : parseInt(target.closest('.outfit-sneaker-btn').dataset.id, 10);</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>const sneaker = getFullSneakerList().find(s =&gt; s.id === sneakerId);</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>if (sneaker) {</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>const outfits = findOutfits(sneaker);</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>displayOutfitResults(sneaker, outfits);</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>document.getElementById('outfit-builder-selection').classList.add('hidden');</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>document.getElementById('outfit-builder-results').classList.remove('hidden');</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>}</p>
-<p class="p1"><span class="Apple-converted-space">                </span>}</p>
-<p class="p1"><span class="Apple-converted-space">                </span>if (target.closest('#back-to-selection-btn')) {</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>document.getElementById('outfit-builder-selection').classList.remove('hidden');</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>document.getElementById('outfit-builder-results').classList.add('hidden');</p>
-<p class="p1"><span class="Apple-converted-space">                </span>}</p>
-<p class="p1"><span class="Apple-converted-space">            </span>});</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">            </span>// Modal listeners</p>
-<p class="p1"><span class="Apple-converted-space">            </span>document.getElementById('add-sneaker-btn').addEventListener('click', () =&gt; {</p>
-<p class="p1"><span class="Apple-converted-space">                </span>modalTitle.textContent = 'Add a Custom Sneaker';</p>
-<p class="p1"><span class="Apple-converted-space">                </span>document.getElementById('add-sneaker-form').reset();</p>
-<p class="p1"><span class="Apple-converted-space">                </span>sneakerIdInput.value = '';</p>
-<p class="p1"><span class="Apple-converted-space">                </span>modalImagePreview.classList.add('hidden');</p>
-<p class="p1"><span class="Apple-converted-space">                </span>sneakerImageUpload.required = true;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>addSneakerModal.classList.remove('hidden');</p>
-<p class="p1"><span class="Apple-converted-space">            </span>});</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">            </span>document.getElementById('cancel-sneaker-btn').addEventListener('click', () =&gt; {</p>
-<p class="p1"><span class="Apple-converted-space">                </span>document.getElementById('add-sneaker-form').reset();</p>
-<p class="p1"><span class="Apple-converted-space">                </span>modalImagePreview.classList.add('hidden');</p>
-<p class="p1"><span class="Apple-converted-space">                </span>addSneakerModal.classList.add('hidden');</p>
-<p class="p1"><span class="Apple-converted-space">                </span>resizedSneakerImageUrl = null;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>});</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">            </span>sneakerImageUpload.addEventListener('change', async (event) =&gt; {</p>
-<p class="p1"><span class="Apple-converted-space">                </span>const file = event.target.files[0];</p>
-<p class="p1"><span class="Apple-converted-space">                </span>if (file) {</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>try {</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>resizedSneakerImageUrl = await resizeImage(file, 200, 200);</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>modalImagePreview.src = resizedSneakerImageUrl;</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>modalImagePreview.classList.remove('hidden');</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>const tempImg = new Image();</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>tempImg.onload = () =&gt; {</p>
-<p class="p1"><span class="Apple-converted-space">                            </span>const paletteRgb = colorThief.getPalette(tempImg, 4);</p>
-<p class="p1"><span class="Apple-converted-space">                            </span>const detectedColorNames = [...new Set(paletteRgb.map(rgb =&gt; getColorName(rgb)))];</p>
-<p class="p1"><span class="Apple-converted-space">                            </span>document.querySelectorAll('#color-checkboxes input').forEach(box =&gt; box.checked = false);</p>
-<p class="p1"><span class="Apple-converted-space">                            </span>detectedColorNames.forEach(colorName =&gt; {</p>
-<p class="p1"><span class="Apple-converted-space">                                </span>const cb = document.querySelector(`#color-checkboxes input[value="${colorName}"]`);</p>
-<p class="p1"><span class="Apple-converted-space">                                </span>if (cb) cb.checked = true;</p>
-<p class="p1"><span class="Apple-converted-space">                            </span>});</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>};</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>tempImg.src = resizedSneakerImageUrl;</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>} catch (error) {</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>console.error("Error processing sneaker image:", error);</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>alert("Could not process image.");</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>resizedSneakerImageUrl = null;</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>}</p>
-<p class="p1"><span class="Apple-converted-space">                </span>}</p>
-<p class="p1"><span class="Apple-converted-space">            </span>});</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">            </span>document.getElementById('save-sneaker-btn').addEventListener('click', () =&gt; {</p>
-<p class="p1"><span class="Apple-converted-space">                </span>const form = document.getElementById('add-sneaker-form');</p>
-<p class="p1"><span class="Apple-converted-space">                </span>const id = sneakerIdInput.value;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>const name = form.querySelector('#sneaker-name').value;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>const colors = Array.from(form.querySelectorAll('input[name="colors"]:checked')).map(el =&gt; el.value);</p>
-<p class="p1"><span class="Apple-converted-space">                </span>const occasions = Array.from(form.querySelectorAll('input[name="occasions"]:checked')).map(el =&gt; el.value);</p>
-<p class="p1"><span class="Apple-converted-space">                </span>const imageFile = form.querySelector('#sneaker-image-upload').files[0];</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">                </span>if (name &amp;&amp; colors.length &gt; 0 &amp;&amp; occasions.length &gt; 0) {</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>if (id) { // Editing</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>const sneakerIndex = customSneakers.findIndex(s =&gt; s.id == id);</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>if (sneakerIndex &gt; -1) {</p>
-<p class="p1"><span class="Apple-converted-space">                            </span>customSneakers[sneakerIndex].name = name;</p>
-<p class="p1"><span class="Apple-converted-space">                            </span>customSneakers[sneakerIndex].colors = colors;</p>
-<p class="p1"><span class="Apple-converted-space">                            </span>customSneakers[sneakerIndex].occasions = occasions;</p>
-<p class="p1"><span class="Apple-converted-space">                            </span>if (resizedSneakerImageUrl &amp;&amp; resizedSneakerImageUrl !== customSneakers[sneakerIndex].imageUrl) {</p>
-<p class="p1"><span class="Apple-converted-space">                                </span>customSneakers[sneakerIndex].imageUrl = resizedSneakerImageUrl;</p>
-<p class="p1"><span class="Apple-converted-space">                            </span>}</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>}</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>} else { // Adding</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>if (!imageFile &amp;&amp; !resizedSneakerImageUrl) {</p>
-<p class="p1"><span class="Apple-converted-space">                            </span>alert('Please upload an image.');</p>
-<p class="p1"><span class="Apple-converted-space">                            </span>return;</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>}</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>const newSneaker = {</p>
-<p class="p1"><span class="Apple-converted-space">                            </span>id: `custom-${Date.now()}`,</p>
-<p class="p1"><span class="Apple-converted-space">                            </span>name,</p>
-<p class="p1"><span class="Apple-converted-space">                            </span>colors,</p>
-<p class="p1"><span class="Apple-converted-space">                            </span>occasions,</p>
-<p class="p1"><span class="Apple-converted-space">                            </span>imageUrl: resizedSneakerImageUrl</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>};</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>customSneakers.push(newSneaker);</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>addToCloset(newSneaker.id);</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>}</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>saveData();</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>renderCloset();</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>addSneakerModal.classList.add('hidden');</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>form.reset();</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>modalImagePreview.classList.add('hidden');</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>resizedSneakerImageUrl = null;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>} else {</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>alert('Please fill out all fields.');</p>
-<p class="p1"><span class="Apple-converted-space">                </span>}</p>
-<p class="p1"><span class="Apple-converted-space">            </span>});</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">            </span>document.getElementById('browse-search').addEventListener('input', (e) =&gt; {</p>
-<p class="p1"><span class="Apple-converted-space">                </span>renderBrowseView(e.target.value);</p>
-<p class="p1"><span class="Apple-converted-space">            </span>});</p>
-<p class="p1"><span class="Apple-converted-space">        </span>});</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;/script&gt;</p>
-<p class="p1">&lt;/body&gt;</p>
-<p class="p1">&lt;/ht</p>
+<body class="bg-gray-100 text-gray-800 flex items-center justify-center min-h-screen p-4 transition-colors duration-300">
+    <div class="w-full max-w-md bg-white rounded-2xl shadow-xl p-6 md:p-8 transition-colors duration-300">
+        <header class="text-center mb-4">
+            <div class="flex justify-between items-center mb-2">
+                <span class="text-xs text-gray-400" id="closet-count-badge">0 in closet</span>
+                <div class="flex items-center gap-2">
+                    <button id="history-btn" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300" title="Analysis History">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                    </button>
+                    <button id="dark-mode-toggle" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300" title="Toggle Dark Mode">
+                        <svg id="sun-icon" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
+                        <svg id="moon-icon" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/></svg>
+                    </button>
+                </div>
+            </div>
+            <h1 class="text-3xl font-extrabold text-gray-900">Personal Sneaker Stylist</h1>
+            <p class="text-gray-500 mt-1 text-sm">Your AI-powered style assistant</p>
+        </header>
+        <div class="mb-6 border-b border-gray-200">
+            <nav class="flex -mb-px" aria-label="Tabs">
+                <button class="tab-btn active w-1/5 py-3 px-1 text-center border-b-2 font-medium text-xs" data-tab="stylist">Stylist</button>
+                <button class="tab-btn inactive w-1/5 py-3 px-1 text-center border-b-2 font-medium text-xs" data-tab="browse">Browse</button>
+                <button class="tab-btn inactive w-1/5 py-3 px-1 text-center border-b-2 font-medium text-xs" data-tab="outfitBuilder">Outfits</button>
+                <button class="tab-btn inactive w-1/5 py-3 px-1 text-center border-b-2 font-medium text-xs" data-tab="wishlist">Wishlist</button>
+                <button class="tab-btn inactive w-1/5 py-3 px-1 text-center border-b-2 font-medium text-xs" data-tab="closet">Closet</button>
+            </nav>
+        </div>
+        <main id="stylist-view">
+            <div class="mb-4"><label class="block text-sm font-medium text-gray-700 mb-2">1. Upload Your Outfit</label><input type="file" id="image-upload" accept="image/*" class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 cursor-pointer"/></div>
+            <div id="image-preview-container" class="mb-4 hidden w-full aspect-square bg-gray-100 rounded-xl flex items-center justify-center overflow-hidden"><img id="image-preview" src="#" alt="Your Outfit" class="w-full h-full object-cover"/></div>
+            <div id="image-placeholder" class="mb-4 w-full aspect-square bg-gray-100 rounded-xl flex items-center justify-center border-2 border-dashed"><div class="text-center"><svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 mx-auto text-gray-300 mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg><p class="text-gray-400 text-sm">Drop or select an outfit image</p></div></div>
+            <div class="mb-4"><label class="block text-sm font-medium text-gray-700 mb-2">2. Select an Occasion</label><div id="occasion-filters" class="grid grid-cols-3 gap-2"><button class="filter-btn py-2 px-3 rounded-lg active text-sm" data-occasion="casual">Casual</button><button class="filter-btn py-2 px-3 rounded-lg inactive text-sm" data-occasion="athleisure">Athleisure</button><button class="filter-btn py-2 px-3 rounded-lg inactive text-sm" data-occasion="work">Work</button></div></div>
+            <button id="analyze-button" class="w-full bg-blue-600 text-white font-bold py-3 px-4 rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all duration-200 disabled:bg-gray-400 disabled:cursor-not-allowed">3. Analyze Outfit</button>
+            <div id="results-container" class="mt-6"></div>
+        </main>
+        <div id="browse-view" class="hidden"><h2 class="text-xl font-bold text-center mb-3">Browse Collection</h2><div class="flex gap-2 mb-3"><input type="text" id="browse-search" placeholder="Search sneakers..." class="flex-1 rounded-md border-gray-200 shadow-sm text-sm p-2 border"><select id="browse-sort" class="rounded-md border-gray-200 shadow-sm text-sm p-2 border"><option value="name">A-Z</option><option value="price-low">Price: Low</option><option value="price-high">Price: High</option></select></div><div class="flex gap-1 mb-3 flex-wrap" id="browse-color-filters"></div><div id="browse-items-container" class="space-y-3 max-h-96 overflow-y-auto"></div></div>
+        <div id="outfit-builder-view" class="hidden"><div id="outfit-builder-selection"><h2 class="text-xl font-bold text-center mb-4">Select a Sneaker to Style</h2><div id="outfit-builder-closet-items" class="grid grid-cols-3 gap-4"></div></div><div id="outfit-builder-results" class="hidden"></div></div>
+        <div id="wishlist-view" class="hidden"><div class="flex justify-between items-center mb-4"><h2 class="text-xl font-bold">My Wishlist</h2><span id="wishlist-total" class="text-sm text-gray-500"></span></div><div id="wishlist-items-container" class="space-y-3"></div></div>
+        <div id="closet-view" class="hidden"><div class="flex justify-between items-center mb-3"><h2 class="text-xl font-bold">My Sneaker Closet</h2><button id="add-sneaker-btn" class="bg-blue-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-blue-700 text-sm">+ Add</button></div><div id="closet-stats" class="grid grid-cols-3 gap-2 mb-4 text-center"><div class="bg-gray-50 rounded-lg p-2"><p class="text-lg font-bold text-blue-600" id="stat-total">0</p><p class="text-xs text-gray-500">Total</p></div><div class="bg-gray-50 rounded-lg p-2"><p class="text-lg font-bold text-green-600" id="stat-value">$0</p><p class="text-xs text-gray-500">Value</p></div><div class="bg-gray-50 rounded-lg p-2"><p class="text-lg font-bold text-purple-600" id="stat-brands">0</p><p class="text-xs text-gray-500">Brands</p></div></div><div id="closet-items-container" class="space-y-3"></div></div>
+        <div id="history-view" class="hidden"><div class="flex justify-between items-center mb-4"><h2 class="text-xl font-bold">Analysis History</h2><button id="back-from-history" class="text-blue-600 font-semibold text-sm">&larr; Back</button></div><div id="history-items-container" class="space-y-3"></div></div>
+    </div>
+    <div id="sneaker-detail-modal" class="modal fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden z-50"><div class="relative top-10 mx-auto p-5 border w-full max-w-sm shadow-lg rounded-xl bg-white dark:bg-gray-800"><button id="close-detail-modal" class="absolute top-3 right-3 text-gray-400 hover:text-gray-600 text-xl">&times;</button><div id="detail-content" class="text-center"></div></div></div>
+    <div id="add-sneaker-modal" class="modal fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden z-50"><div class="relative top-20 mx-auto p-5 border w-full max-w-md shadow-lg rounded-md bg-white dark:bg-gray-800"><div class="mt-3 text-center"><h3 id="modal-title" class="text-lg leading-6 font-medium text-gray-900">Add a Custom Sneaker</h3><form id="add-sneaker-form" class="mt-2 px-7 py-3 space-y-4 text-left"><input type="hidden" id="sneaker-id"><div><label for="sneaker-name" class="text-sm font-medium">Sneaker Name</label><input type="text" id="sneaker-name" required class="mt-1 w-full rounded-md border-gray-200 shadow-sm sm:text-sm p-2 border"></div><div><label for="sneaker-price" class="text-sm font-medium">Price ($)</label><input type="number" id="sneaker-price" min="0" class="mt-1 w-full rounded-md border-gray-200 shadow-sm sm:text-sm p-2 border" placeholder="0"></div><div><label for="sneaker-image-upload" class="text-sm font-medium">Thumbnail</label><input type="file" id="sneaker-image-upload" accept="image/*" class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-gray-50 file:text-gray-700 hover:file:bg-gray-100"><img id="modal-image-preview" src="#" alt="Sneaker preview" class="hidden mt-2 w-24 h-24 rounded-md object-cover mx-auto"/></div><div><label class="text-sm font-medium">Colors (AI Suggested)</label><div id="color-checkboxes" class="grid grid-cols-3 gap-2 mt-1"></div></div><div><label class="text-sm font-medium">Occasions</label><div id="occasion-checkboxes" class="grid grid-cols-3 gap-2 mt-1"></div></div></form><div class="items-center px-4 py-3"><button id="save-sneaker-btn" class="px-4 py-2 bg-blue-600 text-white text-base font-medium rounded-md w-full shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500">Save Sneaker</button><button id="cancel-sneaker-btn" class="mt-2 px-4 py-2 bg-gray-200 text-gray-800 text-base font-medium rounded-md w-full shadow-sm hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-300">Cancel</button></div></div></div></div>
+    <div id="toast-container" class="fixed bottom-6 left-1/2 -translate-x-1/2 z-50"></div>
+    <script>
+        const SNEAKER_DB=[{id:1,name:"Air Jordan 1 'Chicago'",brand:'Nike',colors:['Red','White','Black'],occasions:['casual'],price:180,imageUrl:'https://placehold.co/100x100/FEE2E2/B91C1C?text=AJ1+Chicago',year:1985},{id:2,name:"Nike Air Force 1 '07",brand:'Nike',colors:['White'],occasions:['casual','work'],price:110,imageUrl:'https://placehold.co/100x100/FFFFFF/1F2937?text=AF1',year:1982},{id:3,name:"Nike Dunk Low 'Panda'",brand:'Nike',colors:['Black','White'],occasions:['casual'],price:110,imageUrl:'https://placehold.co/100x100/000000/FFFFFF?text=Panda+Dunk',year:2021},{id:4,name:"Adidas Ultraboost 'Triple White'",brand:'Adidas',colors:['White'],occasions:['casual','athleisure'],price:190,imageUrl:'https://placehold.co/100x100/FFFFFF/111827?text=Ultraboost',year:2015},{id:5,name:"Yeezy 700 'Wave Runner'",brand:'Adidas',colors:['Grey','Teal','Black','Orange'],occasions:['casual'],price:300,imageUrl:'https://placehold.co/100x100/9CA3AF/0284C7?text=Wave+Runner',year:2017},{id:6,name:"New Balance 990v5 'Grey'",brand:'New Balance',colors:['Grey','White'],occasions:['casual','athleisure','work'],price:185,imageUrl:'https://placehold.co/100x100/D1D5DB/111827?text=NB+990v5',year:2019},{id:7,name:"Adidas Samba OG",brand:'Adidas',colors:['White','Black','Grey'],occasions:['casual'],price:100,imageUrl:'https://placehold.co/100x100/FFFFFF/111827?text=Samba',year:1950},{id:8,name:"Converse Chuck 70 High",brand:'Converse',colors:['Black','Sail'],occasions:['casual'],price:85,imageUrl:'https://placehold.co/100x100/111827/FFFFFF?text=Chuck+70',year:1970},{id:9,name:"Salomon XT-6",brand:'Salomon',colors:['Black','White','Grey'],occasions:['casual','athleisure'],price:180,imageUrl:'https://placehold.co/100x100/4B5563/F9FAFB?text=XT-6',year:2013},{id:10,name:"Common Projects Achilles Low",brand:'Common Projects',colors:['White'],occasions:['casual','work'],price:450,imageUrl:'https://placehold.co/100x100/FFFFFF/4B5563?text=CP+Achilles',year:2004},{id:11,name:"Travis Scott x AJ1 'Mocha'",brand:'Nike',colors:['Mocha','Sail','Black'],occasions:['casual'],price:1800,imageUrl:'https://placehold.co/100x100/854d27/f5f5f4?text=Mocha+AJ1',year:2019},{id:12,name:"Nike Dunk Low 'UNC'",brand:'Nike',colors:['University Blue','White'],occasions:['casual'],price:110,imageUrl:'https://placehold.co/100x100/60a5fa/FFFFFF?text=UNC+Dunk',year:2021}];
+        const CLOTHING_DB=[{id:101,type:'top',name:'White T-Shirt',colors:['White','Sail'],occasions:['casual','athleisure','work'],imageUrl:'https://placehold.co/150x150/FFFFFF/333333?text=White+Tee'},{id:102,type:'top',name:'Black Hoodie',colors:['Black'],occasions:['casual','athleisure'],imageUrl:'https://placehold.co/150x150/111827/FFFFFF?text=Black+Hoodie'},{id:103,type:'top',name:'Grey Sweatshirt',colors:['Grey'],occasions:['casual','athleisure'],imageUrl:'https://placehold.co/150x150/9CA3AF/FFFFFF?text=Grey+Sweatshirt'},{id:104,type:'top',name:'Blue Oxford Shirt',colors:['University Blue','Blue'],occasions:['work','casual'],imageUrl:'https://placehold.co/150x150/60a5fa/FFFFFF?text=Blue+Shirt'},{id:105,type:'top',name:'Red Flannel',colors:['Red','Black'],occasions:['casual'],imageUrl:'https://placehold.co/150x150/DC2626/111827?text=Red+Flannel'},{id:201,type:'bottom',name:'Black Jeans',colors:['Black'],occasions:['casual','work'],imageUrl:'https://placehold.co/150x150/1F2937/FFFFFF?text=Black+Jeans'},{id:202,type:'bottom',name:'Light Wash Jeans',colors:['University Blue','Blue'],occasions:['casual'],imageUrl:'https://placehold.co/150x150/A5B4FC/111827?text=Light+Jeans'},{id:203,type:'bottom',name:'Grey Sweatpants',colors:['Grey'],occasions:['casual','athleisure'],imageUrl:'https://placehold.co/150x150/B0B0B0/111827?text=Grey+Sweats'},{id:204,type:'bottom',name:'Khaki Chinos',colors:['Mocha','Sail'],occasions:['casual','work'],imageUrl:'https://placehold.co/150x150/D2B48C/111827?text=Khakis'},{id:205,type:'bottom',name:'Black Tech Shorts',colors:['Black'],occasions:['athleisure'],imageUrl:'https://placehold.co/150x150/222222/FFFFFF?text=Black+Shorts'}];
+        const COLOR_MAP={'Black':[20,20,20],'White':[250,250,250],'Sail':[245,245,235],'Red':[215,30,45],'Green':[0,128,0],'Blue':[0,0,255],'Royal Blue':[65,105,225],'University Blue':[96,165,250],'Grey':[128,128,128],'Yellow':[255,255,0],'Mocha':[133,77,39],'Teal':[0,128,128],'Orange':[255,165,0]};
+        const OCCASIONS=['casual','athleisure','work'];
+        let uploadedImage=null,selectedOccasion='casual',myCloset=[],customSneakers=[],myWishlist=[],analysisHistory=[],resizedSneakerImageUrl=null,browseColorFilter='all',isDark=false;
+        const allViews={stylist:document.getElementById('stylist-view'),closet:document.getElementById('closet-view'),outfitBuilder:document.getElementById('outfit-builder-view'),browse:document.getElementById('browse-view'),wishlist:document.getElementById('wishlist-view'),history:document.getElementById('history-view')};
+        const closetItemsContainer=document.getElementById('closet-items-container'),imageUpload=document.getElementById('image-upload'),imagePreview=document.getElementById('image-preview'),imagePlaceholder=document.getElementById('image-placeholder'),imagePreviewContainer=document.getElementById('image-preview-container'),analyzeButton=document.getElementById('analyze-button'),resultsContainer=document.getElementById('results-container'),occasionFilters=document.getElementById('occasion-filters'),addSneakerModal=document.getElementById('add-sneaker-modal'),modalTitle=document.getElementById('modal-title'),modalImagePreview=document.getElementById('modal-image-preview'),sneakerImageUpload=document.getElementById('sneaker-image-upload'),sneakerIdInput=document.getElementById('sneaker-id'),colorThief=new ColorThief();
+        function showToast(msg,type='success'){const tc=document.getElementById('toast-container');const t=document.createElement('div');t.className=`toast ${type==='success'?'bg-green-500':'bg-blue-500'} text-white px-4 py-2 rounded-lg shadow-lg text-sm font-medium mb-2`;t.textContent=msg;tc.appendChild(t);setTimeout(()=>t.remove(),3000);}
+        function resizeImage(file,mw,mh){return new Promise((res,rej)=>{const r=new FileReader();r.onload=e=>{const img=new Image();img.onload=()=>{const c=document.createElement('canvas');let w=img.width,h=img.height;if(w>h){if(w>mw){h*=mw/w;w=mw;}}else{if(h>mh){w*=mh/h;h=mh;}}c.width=w;c.height=h;c.getContext('2d').drawImage(img,0,0,w,h);res(c.toDataURL('image/jpeg',0.8));};img.onerror=rej;img.src=e.target.result;};r.onerror=rej;r.readAsDataURL(file);});}
+        function loadData(){myCloset=JSON.parse(localStorage.getItem('mySneakerCloset')||'[]');customSneakers=JSON.parse(localStorage.getItem('myCustomSneakers')||'[]');myWishlist=JSON.parse(localStorage.getItem('myWishlist')||'[]');analysisHistory=JSON.parse(localStorage.getItem('analysisHistory')||'[]');isDark=localStorage.getItem('darkMode')==='true';}
+        function saveData(){localStorage.setItem('mySneakerCloset',JSON.stringify(myCloset));localStorage.setItem('myCustomSneakers',JSON.stringify(customSneakers));localStorage.setItem('myWishlist',JSON.stringify(myWishlist));localStorage.setItem('analysisHistory',JSON.stringify(analysisHistory));}
+        function getFullSneakerList(){return[...SNEAKER_DB,...customSneakers];}
+        function addToCloset(id){if(!myCloset.includes(id)){myCloset.push(id);updateClosetBadge();showToast('Added to closet!');}}
+        function removeFromCloset(id){myCloset=myCloset.filter(i=>i!==id);customSneakers=customSneakers.filter(s=>s.id!==id);saveData();renderCloset();renderOutfitBuilderSelection();updateClosetBadge();}
+        function toggleWishlist(id){if(myWishlist.includes(id)){myWishlist=myWishlist.filter(i=>i!==id);showToast('Removed from wishlist','info');}else{myWishlist.push(id);showToast('Added to wishlist!');}saveData();}
+        function updateClosetBadge(){document.getElementById('closet-count-badge').textContent=myCloset.length+' in closet';}
+        function getColorDistance(a,b){return Math.sqrt(Math.pow(a[0]-b[0],2)+Math.pow(a[1]-b[1],2)+Math.pow(a[2]-b[2],2));}
+        function getColorName(rgb){let name='',min=Infinity;for(const c in COLOR_MAP){const d=getColorDistance(rgb,COLOR_MAP[c]);if(d<min){min=d;name=c;}}return name;}
+        function calcMatchScore(sc,dc){const d=dc.map(n=>n.toLowerCase()),s=sc.map(n=>n.toLowerCase());let m=s.filter(c=>d.includes(c)).length;return Math.min(100,Math.round((m/Math.max(s.length,1))*100+Math.random()*20+20));}
+        function makeScoreRing(score){const color=score>=80?'#22c55e':score>=50?'#eab308':'#ef4444';const c=2*Math.PI*18,o=c-c*score/100;return`<div class="score-ring w-10 h-10"><svg width="40" height="40"><circle cx="20" cy="20" r="18" fill="none" stroke="#e5e7eb" stroke-width="3"/><circle cx="20" cy="20" r="18" fill="none" stroke="${color}" stroke-width="3" stroke-dasharray="${c}" stroke-dashoffset="${o}" stroke-linecap="round"/></svg><span class="score-text" style="color:${color}">${score}</span></div>`;}
+        function renderCloset(){closetItemsContainer.innerHTML='';const items=getFullSneakerList().filter(s=>myCloset.includes(s.id));if(items.length===0){closetItemsContainer.innerHTML='<p class="text-center text-gray-500 py-8">Your closet is empty. Browse sneakers to add some!</p>';updateClosetStats([]);return;}items.forEach(s=>{closetItemsContainer.innerHTML+=`<div class="sneaker-card bg-gray-50 p-3 rounded-lg flex items-center justify-between cursor-pointer" data-detail-id="${s.id}"><div class="flex items-center space-x-3"><img src="${s.imageUrl}" alt="${s.name}" class="w-12 h-12 rounded-md object-cover bg-gray-200"><div><span class="font-medium text-sm">${s.name}</span><p class="text-xs text-gray-400">${s.brand||'Custom'} &bull; $${s.price||0}</p></div></div><div class="flex space-x-2 items-center"><button class="edit-btn text-blue-500 hover:text-blue-700 font-semibold text-xs" data-id="${s.id}">Edit</button><button class="remove-btn text-red-500 hover:text-red-700 font-semibold text-xs" data-id="${s.id}">Remove</button></div></div>`;});updateClosetStats(items);}
+        function updateClosetStats(items){document.getElementById('stat-total').textContent=items.length;document.getElementById('stat-value').textContent='$'+items.reduce((sum,s)=>sum+(s.price||0),0).toLocaleString();document.getElementById('stat-brands').textContent=new Set(items.map(s=>s.brand||'Custom')).size;}
+        function renderWishlist(){const c=document.getElementById('wishlist-items-container');c.innerHTML='';const items=getFullSneakerList().filter(s=>myWishlist.includes(s.id));document.getElementById('wishlist-total').textContent=items.length>0?`${items.length} items &bull; $${items.reduce((sum,s)=>sum+(s.price||0),0).toLocaleString()}`:'';if(items.length===0){c.innerHTML='<p class="text-center text-gray-500 py-8">Your wishlist is empty. Tap the heart on any sneaker!</p>';return;}items.forEach(s=>{c.innerHTML+=`<div class="sneaker-card bg-gray-50 p-3 rounded-lg flex items-center justify-between"><div class="flex items-center space-x-3 cursor-pointer" data-detail-id="${s.id}"><img src="${s.imageUrl}" alt="${s.name}" class="w-12 h-12 rounded-md object-cover bg-gray-200"><div><span class="font-medium text-sm">${s.name}</span><p class="text-xs text-gray-400">$${s.price||0}</p></div></div><div class="flex items-center gap-2"><button class="add-btn bg-blue-100 text-blue-700 hover:bg-blue-200 font-bold text-sm w-8 h-8 rounded-full ${myCloset.includes(s.id)?'opacity-50':''}" data-id="${s.id}" ${myCloset.includes(s.id)?'disabled':''}>+</button><span class="wishlist-heart text-red-500 text-lg" data-wishlist-id="${s.id}">&hearts;</span></div></div>`;});}
+        function renderBrowseView(term=''){const c=document.getElementById('browse-items-container');c.innerHTML='';let items=SNEAKER_DB.filter(s=>s.name.toLowerCase().includes(term.toLowerCase()));if(browseColorFilter!=='all')items=items.filter(s=>s.colors.some(c=>c.toLowerCase()===browseColorFilter.toLowerCase()));const sort=document.getElementById('browse-sort').value;if(sort==='price-low')items.sort((a,b)=>a.price-b.price);else if(sort==='price-high')items.sort((a,b)=>b.price-a.price);else items.sort((a,b)=>a.name.localeCompare(b.name));if(items.length===0){c.innerHTML='<p class="text-center text-gray-500 py-4">No sneakers found.</p>';return;}items.forEach(s=>{const inC=myCloset.includes(s.id),inW=myWishlist.includes(s.id);c.innerHTML+=`<div class="sneaker-card bg-gray-50 p-3 rounded-lg flex items-center justify-between fade-in"><div class="flex items-center space-x-3 cursor-pointer" data-detail-id="${s.id}"><img src="${s.imageUrl}" alt="${s.name}" class="w-12 h-12 rounded-md object-cover bg-gray-200"><div><span class="font-medium text-sm">${s.name}</span><p class="text-xs text-gray-400">${s.brand} &bull; $${s.price}</p></div></div><div class="flex items-center gap-2"><span class="wishlist-heart ${inW?'text-red-500':'text-gray-300'} text-lg" data-wishlist-id="${s.id}">&hearts;</span><button class="add-btn bg-blue-100 text-blue-700 hover:bg-blue-200 font-bold text-sm w-8 h-8 rounded-full disabled:opacity-50 disabled:cursor-not-allowed" data-id="${s.id}" ${inC?'disabled':''}>+</button></div></div>`;});}
+        function renderBrowseColorFilters(){const colors=['all',...new Set(SNEAKER_DB.flatMap(s=>s.colors))].sort();document.getElementById('browse-color-filters').innerHTML=colors.map(c=>`<button class="browse-color-btn text-xs px-2 py-1 rounded-full ${c===browseColorFilter?'bg-blue-600 text-white':'bg-gray-200 text-gray-600 dark:bg-gray-600 dark:text-gray-300'}" data-color="${c}">${c==='all'?'All':c}</button>`).join('');}
+        function findSneakers(cn,occ){const recs=new Set(),lc=cn.map(n=>n.toLowerCase()),db=getFullSneakerList().filter(s=>s.occasions.includes(occ));db.forEach(s=>{if(s.colors.some(sc=>lc.includes(sc.toLowerCase())))recs.add(s);});return Array.from(recs);}
+        function displayResults(recs,palette,colorNames){resultsContainer.innerHTML='';sessionStorage.setItem('lastResults',JSON.stringify(recs));sessionStorage.setItem('lastPalette',JSON.stringify(palette));analysisHistory.unshift({date:new Date().toISOString(),occasion:selectedOccasion,palette,colorNames,resultCount:recs.length});if(analysisHistory.length>20)analysisHistory=analysisHistory.slice(0,20);saveData();resultsContainer.innerHTML='<h2 class="text-lg font-semibold text-gray-800 mb-2 text-center">Detected Palette</h2>';const pd=document.createElement('div');pd.className='flex justify-center items-center space-x-2 mb-1';palette.forEach(rgb=>{pd.innerHTML+=`<div class="w-8 h-8 rounded-full border-2 border-white shadow" style="background-color:rgb(${rgb[0]},${rgb[1]},${rgb[2]})" title="rgb(${rgb.join(',')})"></div>`;});resultsContainer.appendChild(pd);const cl=document.createElement('p');cl.className='text-center text-xs text-gray-400 mb-4';cl.textContent='Colors: '+colorNames.join(', ');resultsContainer.appendChild(cl);if(recs.length>0){const list=document.createElement('ul');list.className='space-y-3';recs.forEach(s=>{const inC=myCloset.includes(s.id),inW=myWishlist.includes(s.id),score=calcMatchScore(s.colors,colorNames),badge=inC?'<span class="ml-1 text-xs font-semibold bg-green-100 text-green-800 px-2 py-0.5 rounded-full">In Closet</span>':'';list.innerHTML+=`<li class="sneaker-card bg-gray-50 p-3 rounded-lg flex items-center justify-between fade-in"><div class="flex items-center space-x-3 cursor-pointer" data-detail-id="${s.id}"><img src="${s.imageUrl}" alt="${s.name}" class="w-14 h-14 rounded-md object-cover bg-gray-200"><div><span class="font-medium text-sm">${s.name}</span>${badge}<p class="text-xs text-gray-400">$${s.price||0}</p></div></div><div class="flex items-center gap-2">${makeScoreRing(score)}<span class="wishlist-heart ${inW?'text-red-500':'text-gray-300'} text-lg" data-wishlist-id="${s.id}">&hearts;</span><button class="add-btn bg-blue-100 text-blue-700 hover:bg-blue-200 font-bold text-sm w-8 h-8 rounded-full disabled:opacity-50" data-id="${s.id}" ${inC?'disabled':''}>+</button></div></li>`;});resultsContainer.appendChild(list);}else{resultsContainer.innerHTML+='<p class="text-center text-gray-500 bg-gray-50 p-3 rounded-lg">No matching sneakers found.</p>';}}
+        function renderHistory(){const c=document.getElementById('history-items-container');c.innerHTML='';if(analysisHistory.length===0){c.innerHTML='<p class="text-center text-gray-500 py-8">No analyses yet.</p>';return;}analysisHistory.forEach(h=>{const d=new Date(h.date),ts=d.toLocaleDateString()+' '+d.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}),dots=h.palette.map(rgb=>`<div class="w-5 h-5 rounded-full border border-white shadow-sm" style="background-color:rgb(${rgb[0]},${rgb[1]},${rgb[2]})"></div>`).join('');c.innerHTML+=`<div class="bg-gray-50 p-3 rounded-lg fade-in"><div class="flex justify-between items-center mb-2"><span class="text-xs text-gray-400">${ts}</span><span class="text-xs font-medium capitalize bg-blue-50 text-blue-600 px-2 py-0.5 rounded-full">${h.occasion}</span></div><div class="flex items-center gap-1 mb-1">${dots}</div><p class="text-xs text-gray-500">${h.resultCount} match${h.resultCount!==1?'es':''} &bull; ${h.colorNames.join(', ')}</p></div>`;});}
+        function showSneakerDetail(id){const s=getFullSneakerList().find(s=>s.id===id);if(!s)return;const inC=myCloset.includes(s.id),inW=myWishlist.includes(s.id),dots=s.colors.map(c=>{const rgb=COLOR_MAP[c]||[128,128,128];return`<div class="flex items-center gap-1"><div class="w-4 h-4 rounded-full border" style="background-color:rgb(${rgb.join(',')})"></div><span class="text-xs">${c}</span></div>`;}).join('');document.getElementById('detail-content').innerHTML=`<img src="${s.imageUrl}" alt="${s.name}" class="w-32 h-32 rounded-xl object-cover mx-auto mb-3 bg-gray-200"><h3 class="text-lg font-bold">${s.name}</h3><p class="text-sm text-gray-500 mb-1">${s.brand||'Custom'}</p><p class="text-2xl font-extrabold text-blue-600 mb-3">$${(s.price||0).toLocaleString()}</p><div class="flex justify-center gap-3 mb-3 flex-wrap">${dots}</div><div class="flex justify-center gap-2 mb-4">${s.occasions.map(o=>`<span class="text-xs capitalize bg-gray-100 dark:bg-gray-700 px-2 py-1 rounded-full">${o}</span>`).join('')}</div>${s.year?`<p class="text-xs text-gray-400 mb-3">Released: ${s.year}</p>`:''}<div class="flex gap-2 justify-center"><button class="add-btn px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700 disabled:opacity-50" data-id="${s.id}" ${inC?'disabled':''}>${inC?'In Closet':'Add to Closet'}</button><button class="wishlist-toggle px-4 py-2 rounded-lg text-sm font-medium ${inW?'bg-red-100 text-red-600':'bg-gray-100 text-gray-600'}" data-wishlist-id="${s.id}">${inW?'Remove from Wishlist':'Add to Wishlist'}</button></div>`;document.getElementById('sneaker-detail-modal').classList.remove('hidden');}
+        function renderOutfitBuilderSelection(){const c=document.getElementById('outfit-builder-closet-items');c.innerHTML='';const items=getFullSneakerList().filter(s=>myCloset.includes(s.id));if(items.length===0){c.innerHTML='<p class="text-center text-gray-500 col-span-3 py-8">Add sneakers to your closet first!</p>';return;}items.forEach(s=>{c.innerHTML+=`<button class="outfit-sneaker-btn text-center" data-id="${s.id}"><img src="${s.imageUrl}" alt="${s.name}" class="w-full h-auto rounded-lg object-cover aspect-square bg-gray-200"><p class="text-xs font-medium mt-1">${s.name}</p></button>`;});}
+        function findOutfits(sneaker){const outfits=[],sc=sneaker.colors.map(c=>c.toLowerCase());for(const occ of sneaker.occasions){const tops=CLOTHING_DB.filter(c=>c.type==='top'&&c.occasions.includes(occ)&&c.colors.some(cc=>sc.includes(cc.toLowerCase())));const bottoms=CLOTHING_DB.filter(c=>c.type==='bottom'&&c.occasions.includes(occ)&&c.colors.some(cc=>sc.includes(cc.toLowerCase())));if(tops.length>0&&bottoms.length>0)outfits.push({occasion:occ,top:tops[0],bottom:bottoms[0]});}return outfits;}
+        function displayOutfitResults(sneaker,outfits){const c=document.getElementById('outfit-builder-results');c.innerHTML=`<div class="text-center mb-4"><button id="back-to-selection-btn" class="text-blue-600 font-semibold text-sm">&larr; Back</button><h2 class="text-lg font-bold mt-1">Styling: ${sneaker.name}</h2></div>`;if(outfits.length===0){c.innerHTML+='<p class="text-center text-gray-500">No outfit ideas found.</p>';return;}outfits.forEach(o=>{c.innerHTML+=`<div class="bg-gray-50 rounded-lg p-4 mb-3 fade-in"><h3 class="font-semibold text-center capitalize mb-2 text-sm">${o.occasion} Look</h3><div class="flex justify-center space-x-4"><div class="text-center"><img src="${o.top.imageUrl}" alt="${o.top.name}" class="w-20 h-20 rounded-md object-cover bg-gray-200"><p class="text-xs mt-1">${o.top.name}</p></div><div class="text-center"><img src="${o.bottom.imageUrl}" alt="${o.bottom.name}" class="w-20 h-20 rounded-md object-cover bg-gray-200"><p class="text-xs mt-1">${o.bottom.name}</p></div></div></div>`;});}
+        function populateModalCheckboxes(){document.getElementById('color-checkboxes').innerHTML=Object.keys(COLOR_MAP).sort().map(c=>`<label class="flex items-center space-x-2"><input type="checkbox" name="colors" value="${c}" class="rounded border-gray-300"><span class="text-sm">${c}</span></label>`).join('');document.getElementById('occasion-checkboxes').innerHTML=OCCASIONS.map(o=>`<label class="flex items-center space-x-2"><input type="checkbox" name="occasions" value="${o}" class="rounded border-gray-300"><span class="capitalize text-sm">${o}</span></label>`).join('');}
+        function openEditModal(id){const s=getFullSneakerList().find(s=>s.id===id);if(!s)return;modalTitle.textContent='Edit Sneaker';sneakerIdInput.value=s.id;document.getElementById('sneaker-name').value=s.name;document.getElementById('sneaker-price').value=s.price||0;document.querySelectorAll('#color-checkboxes input,#occasion-checkboxes input').forEach(b=>b.checked=false);s.colors.forEach(c=>{const cb=document.querySelector(`#color-checkboxes input[value="${c}"]`);if(cb)cb.checked=true;});s.occasions.forEach(o=>{const cb=document.querySelector(`#occasion-checkboxes input[value="${o}"]`);if(cb)cb.checked=true;});modalImagePreview.src=s.imageUrl;modalImagePreview.classList.remove('hidden');resizedSneakerImageUrl=s.imageUrl;sneakerImageUpload.required=false;addSneakerModal.classList.remove('hidden');}
+        function applyDarkMode(){if(isDark){document.documentElement.classList.add('dark');document.getElementById('sun-icon').classList.remove('hidden');document.getElementById('moon-icon').classList.add('hidden');}else{document.documentElement.classList.remove('dark');document.getElementById('sun-icon').classList.add('hidden');document.getElementById('moon-icon').classList.remove('hidden');}}
+        document.addEventListener('DOMContentLoaded',()=>{
+            loadData();applyDarkMode();renderCloset();populateModalCheckboxes();renderBrowseColorFilters();updateClosetBadge();analyzeButton.disabled=true;
+            document.querySelectorAll('.tab-btn').forEach(btn=>{btn.addEventListener('click',()=>{const tab=btn.dataset.tab;document.querySelectorAll('.tab-btn').forEach(b=>b.classList.replace('active','inactive'));btn.classList.replace('inactive','active');Object.values(allViews).forEach(v=>v.classList.add('hidden'));allViews[tab].classList.remove('hidden');if(tab==='closet')renderCloset();if(tab==='browse'){renderBrowseView();renderBrowseColorFilters();}if(tab==='wishlist')renderWishlist();if(tab==='outfitBuilder'){document.getElementById('outfit-builder-selection').classList.remove('hidden');document.getElementById('outfit-builder-results').classList.add('hidden');renderOutfitBuilderSelection();}});});
+            document.getElementById('dark-mode-toggle').addEventListener('click',()=>{isDark=!isDark;localStorage.setItem('darkMode',isDark);applyDarkMode();});
+            document.getElementById('history-btn').addEventListener('click',()=>{Object.values(allViews).forEach(v=>v.classList.add('hidden'));allViews.history.classList.remove('hidden');document.querySelectorAll('.tab-btn').forEach(b=>b.classList.replace('active','inactive'));renderHistory();});
+            document.getElementById('back-from-history').addEventListener('click',()=>{allViews.history.classList.add('hidden');allViews.stylist.classList.remove('hidden');document.querySelector('[data-tab="stylist"]').classList.replace('inactive','active');});
+            imageUpload.addEventListener('change',e=>{const file=e.target.files[0];if(file){const r=new FileReader();r.onload=ev=>{imagePreview.src=ev.target.result;uploadedImage=imagePreview;imagePreviewContainer.classList.remove('hidden');imagePlaceholder.classList.add('hidden');analyzeButton.disabled=false;resultsContainer.innerHTML='';};r.readAsDataURL(file);}});
+            occasionFilters.addEventListener('click',e=>{if(e.target.tagName==='BUTTON'){selectedOccasion=e.target.dataset.occasion;document.querySelectorAll('#occasion-filters .filter-btn').forEach(b=>{b.classList.replace('active','inactive');if(b.dataset.occasion===selectedOccasion)b.classList.add('active');});}});
+            analyzeButton.addEventListener('click',()=>{if(!uploadedImage)return;resultsContainer.innerHTML='<div class="mx-auto loader"></div><p class="text-center text-sm text-gray-400 mt-2">Analyzing colors...</p>';analyzeButton.disabled=true;analyzeButton.textContent='Analyzing...';setTimeout(()=>{try{const p=colorThief.getPalette(uploadedImage,3);const names=[...new Set(p.map(rgb=>getColorName(rgb)))];displayResults(findSneakers(names,selectedOccasion),p,names);}catch(err){console.error(err);resultsContainer.innerHTML='<p class="text-center text-red-500">Could not analyze image.</p>';}finally{analyzeButton.disabled=false;analyzeButton.textContent='3. Analyze Outfit';}},100);});
+            document.getElementById('browse-search').addEventListener('input',e=>renderBrowseView(e.target.value));
+            document.getElementById('browse-sort').addEventListener('change',()=>renderBrowseView(document.getElementById('browse-search').value));
+            document.getElementById('browse-color-filters').addEventListener('click',e=>{if(e.target.classList.contains('browse-color-btn')){browseColorFilter=e.target.dataset.color;renderBrowseColorFilters();renderBrowseView(document.getElementById('browse-search').value);}});
+            document.body.addEventListener('click',e=>{const t=e.target;if(t.closest('.add-btn')&&!t.closest('.add-btn').disabled){const id=t.closest('.add-btn').dataset.id;const sid=id.startsWith('custom-')?id:parseInt(id,10);addToCloset(sid);saveData();const lr=JSON.parse(sessionStorage.getItem('lastResults')||'[]'),lp=JSON.parse(sessionStorage.getItem('lastPalette')||'[]');if(lr.length>0&&!allViews.stylist.classList.contains('hidden'))displayResults(lr,lp,[]);if(!allViews.browse.classList.contains('hidden'))renderBrowseView(document.getElementById('browse-search').value);if(!allViews.wishlist.classList.contains('hidden'))renderWishlist();}if(t.closest('.remove-btn')){const id=t.closest('.remove-btn').dataset.id;removeFromCloset(id.startsWith('custom-')?id:parseInt(id,10));}if(t.closest('.edit-btn')){const id=t.closest('.edit-btn').dataset.id;openEditModal(id.startsWith('custom-')?id:parseInt(id,10));}if(t.closest('.wishlist-heart')||t.closest('.wishlist-toggle')){const el=t.closest('.wishlist-heart')||t.closest('.wishlist-toggle');const id=el.dataset.wishlistId;const sid=id.startsWith('custom-')?id:parseInt(id,10);toggleWishlist(sid);if(!allViews.browse.classList.contains('hidden'))renderBrowseView(document.getElementById('browse-search').value);if(!allViews.wishlist.classList.contains('hidden'))renderWishlist();if(!document.getElementById('sneaker-detail-modal').classList.contains('hidden'))showSneakerDetail(sid);}if(t.closest('[data-detail-id]')){const id=t.closest('[data-detail-id]').dataset.detailId;showSneakerDetail(id.startsWith('custom-')?id:parseInt(id,10));}if(t.closest('.outfit-sneaker-btn')){const id=t.closest('.outfit-sneaker-btn').dataset.id;const sid=id.startsWith('custom-')?id:parseInt(id,10);const s=getFullSneakerList().find(s=>s.id===sid);if(s){displayOutfitResults(s,findOutfits(s));document.getElementById('outfit-builder-selection').classList.add('hidden');document.getElementById('outfit-builder-results').classList.remove('hidden');}}if(t.closest('#back-to-selection-btn')){document.getElementById('outfit-builder-selection').classList.remove('hidden');document.getElementById('outfit-builder-results').classList.add('hidden');}});
+            document.getElementById('close-detail-modal').addEventListener('click',()=>document.getElementById('sneaker-detail-modal').classList.add('hidden'));
+            document.getElementById('sneaker-detail-modal').addEventListener('click',e=>{if(e.target===document.getElementById('sneaker-detail-modal'))document.getElementById('sneaker-detail-modal').classList.add('hidden');});
+            document.getElementById('add-sneaker-btn').addEventListener('click',()=>{modalTitle.textContent='Add a Custom Sneaker';document.getElementById('add-sneaker-form').reset();sneakerIdInput.value='';document.getElementById('sneaker-price').value='';modalImagePreview.classList.add('hidden');sneakerImageUpload.required=true;addSneakerModal.classList.remove('hidden');});
+            document.getElementById('cancel-sneaker-btn').addEventListener('click',()=>{document.getElementById('add-sneaker-form').reset();modalImagePreview.classList.add('hidden');addSneakerModal.classList.add('hidden');resizedSneakerImageUrl=null;});
+            sneakerImageUpload.addEventListener('change',async e=>{const file=e.target.files[0];if(file){try{resizedSneakerImageUrl=await resizeImage(file,200,200);modalImagePreview.src=resizedSneakerImageUrl;modalImagePreview.classList.remove('hidden');const img=new Image();img.onload=()=>{const p=colorThief.getPalette(img,4);const names=[...new Set(p.map(rgb=>getColorName(rgb)))];document.querySelectorAll('#color-checkboxes input').forEach(b=>b.checked=false);names.forEach(n=>{const cb=document.querySelector(`#color-checkboxes input[value="${n}"]`);if(cb)cb.checked=true;});};img.src=resizedSneakerImageUrl;}catch(err){console.error(err);alert('Could not process image.');resizedSneakerImageUrl=null;}}});
+            document.getElementById('save-sneaker-btn').addEventListener('click',()=>{const form=document.getElementById('add-sneaker-form');const id=sneakerIdInput.value,name=form.querySelector('#sneaker-name').value,price=parseInt(form.querySelector('#sneaker-price').value)||0,colors=Array.from(form.querySelectorAll('input[name="colors"]:checked')).map(el=>el.value),occasions=Array.from(form.querySelectorAll('input[name="occasions"]:checked')).map(el=>el.value),imageFile=form.querySelector('#sneaker-image-upload').files[0];if(name&&colors.length>0&&occasions.length>0){if(id){const idx=customSneakers.findIndex(s=>s.id==id);if(idx>-1){customSneakers[idx].name=name;customSneakers[idx].price=price;customSneakers[idx].colors=colors;customSneakers[idx].occasions=occasions;if(resizedSneakerImageUrl&&resizedSneakerImageUrl!==customSneakers[idx].imageUrl)customSneakers[idx].imageUrl=resizedSneakerImageUrl;}}else{if(!imageFile&&!resizedSneakerImageUrl){alert('Please upload an image.');return;}const ns={id:`custom-${Date.now()}`,name,brand:'Custom',price,colors,occasions,imageUrl:resizedSneakerImageUrl};customSneakers.push(ns);addToCloset(ns.id);}saveData();renderCloset();addSneakerModal.classList.add('hidden');form.reset();modalImagePreview.classList.add('hidden');resizedSneakerImageUrl=null;showToast('Sneaker saved!');}else{alert('Please fill out all fields.');}});
+        });
+    </script>
 </body>
 </html>
