@@ -420,23 +420,42 @@
         <div id="closet-view" class="hidden">
             <div class="flex justify-between items-center mb-3">
                 <h2 class="text-xl font-bold">My Closet</h2>
-                <button id="add-sneaker-btn" class="bg-blue-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-blue-700 text-sm">+ Add</button>
+                <button id="add-closet-item-btn" class="bg-blue-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-blue-700 text-sm">+ Add</button>
             </div>
-            <div class="grid grid-cols-3 gap-2 mb-4 text-center">
-                <div class="bg-gray-50 rounded-lg p-2">
-                    <p class="text-lg font-bold text-blue-600" id="stat-total">0</p>
-                    <p class="text-xs text-gray-500">Total</p>
-                </div>
-                <div class="bg-gray-50 rounded-lg p-2">
-                    <p class="text-lg font-bold text-green-600" id="stat-value">$0</p>
-                    <p class="text-xs text-gray-500">Value</p>
-                </div>
-                <div class="bg-gray-50 rounded-lg p-2">
-                    <p class="text-lg font-bold text-purple-600" id="stat-brands">0</p>
-                    <p class="text-xs text-gray-500">Brands</p>
-                </div>
+            <div class="flex bg-gray-100 dark:bg-gray-700 rounded-xl p-1 gap-1 mb-4">
+                <button class="closet-mode-btn flex-1 py-2 px-3 rounded-lg text-sm font-semibold transition-all bg-blue-600 text-white" data-cmode="sneakers">Sneakers</button>
+                <button class="closet-mode-btn flex-1 py-2 px-3 rounded-lg text-sm font-semibold transition-all text-gray-500" data-cmode="wardrobe">Wardrobe</button>
             </div>
-            <div id="closet-items-container" class="space-y-3"></div>
+            <div id="sneakers-section">
+                <div class="grid grid-cols-3 gap-2 mb-4 text-center">
+                    <div class="bg-gray-50 rounded-lg p-2">
+                        <p class="text-lg font-bold text-blue-600" id="stat-total">0</p>
+                        <p class="text-xs text-gray-500">Total</p>
+                    </div>
+                    <div class="bg-gray-50 rounded-lg p-2">
+                        <p class="text-lg font-bold text-green-600" id="stat-value">$0</p>
+                        <p class="text-xs text-gray-500">Value</p>
+                    </div>
+                    <div class="bg-gray-50 rounded-lg p-2">
+                        <p class="text-lg font-bold text-purple-600" id="stat-brands">0</p>
+                        <p class="text-xs text-gray-500">Brands</p>
+                    </div>
+                </div>
+                <div id="closet-items-container" class="space-y-3"></div>
+            </div>
+            <div id="wardrobe-section" class="hidden">
+                <div class="grid grid-cols-2 gap-2 mb-4 text-center">
+                    <div class="bg-gray-50 rounded-lg p-2">
+                        <p class="text-lg font-bold text-blue-600" id="ward-stat-total">0</p>
+                        <p class="text-xs text-gray-500">Items</p>
+                    </div>
+                    <div class="bg-gray-50 rounded-lg p-2">
+                        <p class="text-lg font-bold text-purple-600" id="ward-stat-types">0</p>
+                        <p class="text-xs text-gray-500">Types</p>
+                    </div>
+                </div>
+                <div id="wardrobe-items-container" class="space-y-3"></div>
+            </div>
         </div>
 
         <!-- MORE MENU -->
@@ -571,6 +590,44 @@
                 <div class="px-4 py-3">
                     <button id="save-sneaker-btn" class="px-4 py-2 bg-blue-600 text-white rounded-md w-full hover:bg-blue-700">Save</button>
                     <button id="cancel-sneaker-btn" class="mt-2 px-4 py-2 bg-gray-200 text-gray-800 rounded-md w-full hover:bg-gray-300">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="add-clothing-modal" class="modal fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden z-50">
+        <div class="relative top-20 mx-auto p-5 border w-full max-w-md shadow-lg rounded-md bg-white dark:bg-gray-800">
+            <div class="mt-3 text-center">
+                <h3 class="text-lg leading-6 font-medium text-gray-900">Add Clothing Item</h3>
+                <form id="add-clothing-form" class="mt-2 px-7 py-3 space-y-4 text-left">
+                    <input type="hidden" id="clothing-id">
+                    <div>
+                        <label for="clothing-name" class="text-sm font-medium">Name</label>
+                        <input type="text" id="clothing-name" required class="mt-1 w-full rounded-md border-gray-200 shadow-sm text-sm p-2 border" placeholder="e.g. Navy Polo Shirt">
+                    </div>
+                    <div>
+                        <label for="clothing-type" class="text-sm font-medium">Type</label>
+                        <select id="clothing-type" class="mt-1 w-full rounded-md border-gray-200 shadow-sm text-sm p-2 border">
+                            <option value="top">Top</option>
+                            <option value="bottom">Bottom</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="text-sm font-medium">Photo</label>
+                        <input type="file" id="clothing-image-upload" accept="image/*" class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-gray-50 file:text-gray-700">
+                        <img id="clothing-image-preview" src="#" alt="Preview" class="hidden mt-2 w-24 h-24 rounded-md object-cover mx-auto"/>
+                    </div>
+                    <div>
+                        <label class="text-sm font-medium">Colors</label>
+                        <div id="clothing-color-checkboxes" class="grid grid-cols-3 gap-2 mt-1"></div>
+                    </div>
+                    <div>
+                        <label class="text-sm font-medium">Occasions</label>
+                        <div id="clothing-occasion-checkboxes" class="grid grid-cols-3 gap-2 mt-1"></div>
+                    </div>
+                </form>
+                <div class="px-4 py-3">
+                    <button id="save-clothing-btn" class="px-4 py-2 bg-blue-600 text-white rounded-md w-full hover:bg-blue-700">Save</button>
+                    <button id="cancel-clothing-btn" class="mt-2 px-4 py-2 bg-gray-200 text-gray-800 rounded-md w-full hover:bg-gray-300">Cancel</button>
                 </div>
             </div>
         </div>
@@ -891,17 +948,20 @@
         selectedOccasion = 'casual',
         myCloset = [],
         customSneakers = [],
+        myCustomClothing = [],
         myWishlist = [],
         analysisHistory = [],
         wearLog = {},
         resizedSneakerImageUrl = null,
+        resizedClothingImageUrl = null,
         browseColorFilter = 'all',
         isDark = false,
         compareSlots = [null, null],
         activeCompareSlot = null,
         quizStep = 0,
         quizAnswers = [],
-        stylistMode = 'outfit';
+        stylistMode = 'outfit',
+        closetMode = 'sneakers';
     const allViews = {
         stylist: document.getElementById('stylist-view'),
         closet: document.getElementById('closet-view'),
@@ -973,6 +1033,7 @@
     function loadData() {
         myCloset = JSON.parse(localStorage.getItem('mySneakerCloset') || '[]');
         customSneakers = JSON.parse(localStorage.getItem('myCustomSneakers') || '[]');
+        myCustomClothing = JSON.parse(localStorage.getItem('myCustomClothing') || '[]');
         myWishlist = JSON.parse(localStorage.getItem('myWishlist') || '[]');
         analysisHistory = JSON.parse(localStorage.getItem('analysisHistory') || '[]');
         wearLog = JSON.parse(localStorage.getItem('wearLog') || '{}');
@@ -981,12 +1042,93 @@
     function saveData() {
         localStorage.setItem('mySneakerCloset', JSON.stringify(myCloset));
         localStorage.setItem('myCustomSneakers', JSON.stringify(customSneakers));
+        localStorage.setItem('myCustomClothing', JSON.stringify(myCustomClothing));
         localStorage.setItem('myWishlist', JSON.stringify(myWishlist));
         localStorage.setItem('analysisHistory', JSON.stringify(analysisHistory));
         localStorage.setItem('wearLog', JSON.stringify(wearLog));
     }
     function getAll() {
         return [...SNEAKER_DB, ...customSneakers];
+    }
+    function getAllClothing() {
+        return [...CLOTHING_DB, ...myCustomClothing];
+    }
+    function switchClosetMode(mode) {
+        closetMode = mode;
+        document.querySelectorAll('.closet-mode-btn').forEach(b => {
+            if (b.dataset.cmode === mode) {
+                b.classList.add('bg-blue-600', 'text-white');
+                b.classList.remove('text-gray-500');
+            } else {
+                b.classList.remove('bg-blue-600', 'text-white');
+                b.classList.add('text-gray-500');
+            }
+        });
+        if (mode === 'sneakers') {
+            document.getElementById('sneakers-section').classList.remove('hidden');
+            document.getElementById('wardrobe-section').classList.add('hidden');
+            renderCloset();
+        }
+        else {
+            document.getElementById('sneakers-section').classList.add('hidden');
+            document.getElementById('wardrobe-section').classList.remove('hidden');
+            renderWardrobe();
+        }
+    }
+    function renderWardrobe() {
+        const c = document.getElementById('wardrobe-items-container');
+        c.innerHTML = '';
+        if (!myCustomClothing.length) {
+            c.innerHTML = '<p class="text-center text-gray-500 py-8">No clothing added yet. Tap + Add to photograph your clothes!</p>';
+            document.getElementById('ward-stat-total').textContent = '0';
+            document.getElementById('ward-stat-types').textContent = '0';
+            return;
+        }
+        document.getElementById('ward-stat-total').textContent = myCustomClothing.length;
+        document.getElementById('ward-stat-types').textContent = new Set(myCustomClothing.map(cl => cl.type)).size;
+        const tops = myCustomClothing.filter(cl => cl.type === 'top'),
+            bottoms = myCustomClothing.filter(cl => cl.type === 'bottom');
+        if (tops.length) {
+            c.innerHTML += '<p class="text-xs text-gray-500 font-medium mb-2">Tops</p>';
+            tops.forEach(cl => {
+                c.innerHTML += `<div class="sneaker-card bg-gray-50 p-3 rounded-lg flex items-center justify-between fade-in"><div class="flex items-center space-x-3"><img src="${cl.imageUrl}" class="w-12 h-12 rounded-md object-cover bg-gray-200"><div><span class="font-medium text-sm">${cl.name}</span><p class="text-xs text-gray-400">${cl.colors.join(', ')}</p></div></div><div class="flex space-x-1 items-center"><button class="edit-clothing-btn text-blue-500 hover:text-blue-700 text-xs font-semibold" data-clothing-id="${cl.id}">Edit</button><button class="remove-clothing-btn text-red-500 hover:text-red-700 text-xs font-semibold" data-clothing-id="${cl.id}">X</button></div></div>`;
+            });
+        }
+        if (bottoms.length) {
+            c.innerHTML += '<p class="text-xs text-gray-500 font-medium mb-2 mt-3">Bottoms</p>';
+            bottoms.forEach(cl => {
+                c.innerHTML += `<div class="sneaker-card bg-gray-50 p-3 rounded-lg flex items-center justify-between fade-in"><div class="flex items-center space-x-3"><img src="${cl.imageUrl}" class="w-12 h-12 rounded-md object-cover bg-gray-200"><div><span class="font-medium text-sm">${cl.name}</span><p class="text-xs text-gray-400">${cl.colors.join(', ')}</p></div></div><div class="flex space-x-1 items-center"><button class="edit-clothing-btn text-blue-500 hover:text-blue-700 text-xs font-semibold" data-clothing-id="${cl.id}">Edit</button><button class="remove-clothing-btn text-red-500 hover:text-red-700 text-xs font-semibold" data-clothing-id="${cl.id}">X</button></div></div>`;
+            });
+        }
+    }
+    function populateClothingCheckboxes() {
+        document.getElementById('clothing-color-checkboxes').innerHTML = Object.keys(COLOR_MAP).sort().map(c => `<label class="flex items-center space-x-2"><input type="checkbox" name="cl-colors" value="${c}" class="rounded border-gray-300"><span class="text-sm">${c}</span></label>`).join('');
+        document.getElementById('clothing-occasion-checkboxes').innerHTML = OCCASIONS.map(o => `<label class="flex items-center space-x-2"><input type="checkbox" name="cl-occasions" value="${o}" class="rounded border-gray-300"><span class="capitalize text-sm">${o}</span></label>`).join('');
+    }
+    function openClothingEdit(id) {
+        const cl = myCustomClothing.find(c => c.id === id);
+        if (!cl)
+            return;
+        document.getElementById('clothing-id').value = cl.id;
+        document.getElementById('clothing-name').value = cl.name;
+        document.getElementById('clothing-type').value = cl.type;
+        document.querySelectorAll('#clothing-color-checkboxes input,#clothing-occasion-checkboxes input').forEach(b => b.checked = false);
+        cl.colors.forEach(c => {
+            const cb = document.querySelector(`#clothing-color-checkboxes input[value="${c}"]`);
+            if (cb)
+                cb.checked = true;
+        });
+        (cl.occasions || []).forEach(o => {
+            const cb = document.querySelector(`#clothing-occasion-checkboxes input[value="${o}"]`);
+            if (cb)
+                cb.checked = true;
+        });
+        const prev = document.getElementById('clothing-image-preview');
+        prev.src = cl.imageUrl;
+        prev.classList.remove('hidden');
+        resizedClothingImageUrl = cl.imageUrl;
+        document.getElementById('clothing-image-upload').required = false;
+        document.getElementById('add-clothing-modal').classList.remove('hidden');
     }
     function addToCloset(id) {
         if (!myCloset.includes(id)) {
@@ -1139,7 +1281,7 @@
     }
     function buildPrompt(mode) {
         const sneakerList = getAll().map(s => `- ${s.name} (colors: ${s.colors.join(', ')}; occasions: ${s.occasions.join(', ')}; $${s.price})`).join('\n');
-        const clothingList = CLOTHING_DB.map(c => `- ${c.name} (${c.type}, colors: ${c.colors.join(', ')})`).join('\n');
+        const clothingList = getAllClothing().map(c => `- ${c.name} (${c.type}, colors: ${c.colors.join(', ')})`).join('\n');
         if (mode === 'outfit')
             return `You are a personal sneaker stylist AI. Analyze this outfit photo carefully. Identify all clothing items, colors, patterns, and overall style.
 
@@ -1277,10 +1419,11 @@
         if (ai.stylingTip)
             html += `<div class="bg-yellow-50 dark:bg-gray-700 border border-yellow-200 dark:border-gray-600 rounded-lg p-3 mb-4 fade-in"><p class="text-xs text-yellow-800 dark:text-yellow-200"><strong>Styling tip:</strong> ${ai.stylingTip}</p></div>`;
         html += '<h3 class="font-bold text-sm mb-3 text-center">AI Outfit Suggestions</h3>';
+        const allCl = getAllClothing();
         if (ai.tops && ai.tops.length) {
             html += '<p class="text-xs text-gray-500 mb-2 font-medium">Tops</p><div class="space-y-2 mb-4">';
             ai.tops.forEach(t => {
-                const item = CLOTHING_DB.find(c => c.name === t.name);
+                const item = allCl.find(c => c.name === t.name);
                 if (item)
                     html += `<div class="bg-gray-50 rounded-lg p-3 flex items-center gap-3 fade-in"><img src="${item.imageUrl}" class="w-12 h-12 rounded-md object-cover bg-gray-200"><div><p class="text-sm font-medium">${item.name}</p><p class="text-xs text-gray-500 italic">${t.reason || ''}</p></div></div>`;
             });
@@ -1289,7 +1432,7 @@
         if (ai.bottoms && ai.bottoms.length) {
             html += '<p class="text-xs text-gray-500 mb-2 font-medium">Bottoms</p><div class="space-y-2 mb-4">';
             ai.bottoms.forEach(b => {
-                const item = CLOTHING_DB.find(c => c.name === b.name);
+                const item = allCl.find(c => c.name === b.name);
                 if (item)
                     html += `<div class="bg-gray-50 rounded-lg p-3 flex items-center gap-3 fade-in"><img src="${item.imageUrl}" class="w-12 h-12 rounded-md object-cover bg-gray-200"><div><p class="text-sm font-medium">${item.name}</p><p class="text-xs text-gray-500 italic">${b.reason || ''}</p></div></div>`;
             });
@@ -1409,9 +1552,10 @@
         resultsContainer.innerHTML = '';
     }
     function findOutfitsForShoe(colorNames) {
-        const lc = colorNames.map(n => n.toLowerCase());
-        const tops = CLOTHING_DB.filter(c => c.type === 'top' && c.colors.some(cc => lc.includes(cc.toLowerCase())));
-        const bottoms = CLOTHING_DB.filter(c => c.type === 'bottom' && c.colors.some(cc => lc.includes(cc.toLowerCase())));
+        const lc = colorNames.map(n => n.toLowerCase()),
+            all = getAllClothing();
+        const tops = all.filter(c => c.type === 'top' && c.colors.some(cc => lc.includes(cc.toLowerCase())));
+        const bottoms = all.filter(c => c.type === 'bottom' && c.colors.some(cc => lc.includes(cc.toLowerCase())));
         return {
             tops,
             bottoms
@@ -1632,10 +1776,11 @@
     }
     function findOutfits(s) {
         const out = [],
-            sc = s.colors.map(c => c.toLowerCase());
+            sc = s.colors.map(c => c.toLowerCase()),
+            all = getAllClothing();
         for (const occ of s.occasions) {
-            const tops = CLOTHING_DB.filter(c => c.type === 'top' && c.occasions.includes(occ) && c.colors.some(cc => sc.includes(cc.toLowerCase())));
-            const bots = CLOTHING_DB.filter(c => c.type === 'bottom' && c.occasions.includes(occ) && c.colors.some(cc => sc.includes(cc.toLowerCase())));
+            const tops = all.filter(c => c.type === 'top' && c.occasions.includes(occ) && c.colors.some(cc => sc.includes(cc.toLowerCase())));
+            const bots = all.filter(c => c.type === 'bottom' && c.occasions.includes(occ) && c.colors.some(cc => sc.includes(cc.toLowerCase())));
             if (tops.length && bots.length)
                 out.push({
                     occasion: occ,
@@ -2113,14 +2258,25 @@
             if (e.target === document.getElementById('sneaker-detail-modal'))
                 document.getElementById('sneaker-detail-modal').classList.add('hidden');
         });
-        document.getElementById('add-sneaker-btn').addEventListener('click', () => {
-            modalTitle.textContent = 'Add a Custom Sneaker';
-            document.getElementById('add-sneaker-form').reset();
-            sneakerIdInput.value = '';
-            document.getElementById('sneaker-price').value = '';
-            modalImagePreview.classList.add('hidden');
-            sneakerImageUpload.required = true;
-            addSneakerModal.classList.remove('hidden');
+        document.querySelectorAll('.closet-mode-btn').forEach(b => b.addEventListener('click', () => switchClosetMode(b.dataset.cmode)));
+        document.getElementById('add-closet-item-btn').addEventListener('click', () => {
+            if (closetMode === 'wardrobe') {
+                populateClothingCheckboxes();
+                document.getElementById('add-clothing-form').reset();
+                document.getElementById('clothing-id').value = '';
+                document.getElementById('clothing-image-preview').classList.add('hidden');
+                document.getElementById('clothing-image-upload').required = true;
+                resizedClothingImageUrl = null;
+                document.getElementById('add-clothing-modal').classList.remove('hidden');
+            } else {
+                modalTitle.textContent = 'Add a Custom Sneaker';
+                document.getElementById('add-sneaker-form').reset();
+                sneakerIdInput.value = '';
+                document.getElementById('sneaker-price').value = '';
+                modalImagePreview.classList.add('hidden');
+                sneakerImageUpload.required = true;
+                addSneakerModal.classList.remove('hidden');
+            }
         });
         document.getElementById('cancel-sneaker-btn').addEventListener('click', () => {
             document.getElementById('add-sneaker-form').reset();
@@ -2196,6 +2352,93 @@
                 showToast('Saved!');
             } else
                 alert('Fill all fields.');
+        });
+        document.getElementById('cancel-clothing-btn').addEventListener('click', () => {
+            document.getElementById('add-clothing-form').reset();
+            document.getElementById('clothing-image-preview').classList.add('hidden');
+            document.getElementById('add-clothing-modal').classList.add('hidden');
+            resizedClothingImageUrl = null;
+        });
+        document.getElementById('clothing-image-upload').addEventListener('change', async e => {
+            const file = e.target.files[0];
+            if (file) {
+                try {
+                    resizedClothingImageUrl = await resizeImage(file, 200, 200);
+                    const prev = document.getElementById('clothing-image-preview');
+                    prev.src = resizedClothingImageUrl;
+                    prev.classList.remove('hidden');
+                    const img = new Image();
+                    img.onload = () => {
+                        const p = colorThief.getPalette(img, 4);
+                        [...new Set(p.map(rgb => getColorName(rgb)))].forEach(n => {
+                            const cb = document.querySelector(`#clothing-color-checkboxes input[value="${n}"]`);
+                            if (cb)
+                                cb.checked = true;
+                        });
+                    };
+                    img.src = resizedClothingImageUrl;
+                } catch (e) {
+                    resizedClothingImageUrl = null;
+                }
+            }
+        });
+        document.getElementById('save-clothing-btn').addEventListener('click', () => {
+            const form = document.getElementById('add-clothing-form'),
+                id = document.getElementById('clothing-id').value,
+                name = document.getElementById('clothing-name').value.trim(),
+                type = document.getElementById('clothing-type').value,
+                colors = Array.from(form.querySelectorAll('input[name="cl-colors"]:checked')).map(el => el.value),
+                occasions = Array.from(form.querySelectorAll('input[name="cl-occasions"]:checked')).map(el => el.value);
+            if (name && colors.length && occasions.length) {
+                if (id) {
+                    const idx = myCustomClothing.findIndex(c => c.id === id);
+                    if (idx > -1) {
+                        Object.assign(myCustomClothing[idx], {
+                            name,
+                            type,
+                            colors,
+                            occasions
+                        });
+                        if (resizedClothingImageUrl)
+                            myCustomClothing[idx].imageUrl = resizedClothingImageUrl;
+                    }
+                } else {
+                    if (!resizedClothingImageUrl) {
+                        alert('Upload a photo.');
+                        return;
+                    }
+                    myCustomClothing.push({
+                        id: `cloth-${Date.now()}`,
+                        name,
+                        type,
+                        colors,
+                        occasions,
+                        imageUrl: resizedClothingImageUrl
+                    });
+                }
+                saveData();
+                renderWardrobe();
+                document.getElementById('add-clothing-modal').classList.add('hidden');
+                form.reset();
+                document.getElementById('clothing-image-preview').classList.add('hidden');
+                resizedClothingImageUrl = null;
+                showToast('Clothing saved!');
+            } else
+                alert('Fill name, colors, and occasions.');
+        });
+        document.body.addEventListener('click', e => {
+            const t = e.target;
+            if (t.closest('.remove-clothing-btn')) {
+                const id = t.closest('.remove-clothing-btn').dataset.clothingId;
+                myCustomClothing = myCustomClothing.filter(c => c.id !== id);
+                saveData();
+                renderWardrobe();
+                showToast('Clothing removed', 'info');
+            }
+            if (t.closest('.edit-clothing-btn')) {
+                populateClothingCheckboxes();
+                openClothingEdit(t.closest('.edit-clothing-btn').dataset.clothingId);
+            }
         });
     });
     </script>
