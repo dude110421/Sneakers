@@ -1,151 +1,95 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Personal Sneaker Stylist</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/color-thief/2.3.0/color-thief.umd.js"></script>
-    <script>
-        tailwind.config = {
-            darkMode: 'class',
-            theme: { extend: { colors: { brand: { 50:'#eff6ff',100:'#dbeafe',500:'#3b82f6',600:'#2563eb',700:'#1d4ed8' } } } }
-        }
-    </script>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
-        body { font-family: 'Inter', sans-serif; }
-        .loader { border: 4px solid #f3f3f3; border-top: 4px solid #3498db; border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; }
-        @keyframes spin { 0%{transform:rotate(0deg)} 100%{transform:rotate(360deg)} }
-        .filter-btn,.tab-btn { transition: all 0.2s ease-in-out; }
-        .filter-btn.active,.tab-btn.active { background-color:#2563EB; color:white; font-weight:600; }
-        .filter-btn.inactive,.tab-btn.inactive { background-color:#F3F4F6; color:#374151; }
-        .dark .filter-btn.inactive,.dark .tab-btn.inactive { background-color:#374151; color:#d1d5db; }
-        .modal { transition: opacity 0.25s ease; }
-        .score-ring { position:relative; display:inline-flex; align-items:center; justify-content:center; }
-        .score-ring svg { transform: rotate(-90deg); }
-        .score-ring .score-text { position:absolute; font-weight:700; font-size:0.75rem; }
-        .fade-in { animation: fadeIn 0.3s ease-in; }
-        @keyframes fadeIn { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
-        .sneaker-card:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(0,0,0,0.1); }
-        .sneaker-card { transition: transform 0.2s, box-shadow 0.2s; }
-        .toast { animation: slideUp 0.3s ease-out, fadeOut 0.3s ease-in 2.7s; }
-        @keyframes slideUp { from{transform:translateY(100%);opacity:0} to{transform:translateY(0);opacity:1} }
-        @keyframes fadeOut { from{opacity:1} to{opacity:0} }
-        .wishlist-heart { cursor:pointer; transition: transform 0.2s; }
-        .wishlist-heart:hover { transform: scale(1.2); }
-        .dark .bg-white { background-color: #1f2937; }
-        .dark .bg-gray-50 { background-color: #374151; }
-        .dark .bg-gray-100 { background-color: #111827; }
-        .dark .text-gray-900 { color: #f9fafb; }
-        .dark .text-gray-800 { color: #e5e7eb; }
-        .dark .text-gray-700 { color: #d1d5db; }
-        .dark .text-gray-500 { color: #9ca3af; }
-        .dark .text-gray-400 { color: #6b7280; }
-        .dark .border-gray-200 { border-color: #4b5563; }
-        .dark input, .dark select { background-color: #374151; color: #e5e7eb; border-color: #4b5563; }
-    </style>
-</head>
-<body class="bg-gray-100 text-gray-800 flex items-center justify-center min-h-screen p-4 transition-colors duration-300">
-    <div class="w-full max-w-md bg-white rounded-2xl shadow-xl p-6 md:p-8 transition-colors duration-300">
-        <header class="text-center mb-4">
-            <div class="flex justify-between items-center mb-2">
-                <span class="text-xs text-gray-400" id="closet-count-badge">0 in closet</span>
-                <div class="flex items-center gap-2">
-                    <button id="history-btn" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300" title="Analysis History">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                    </button>
-                    <button id="dark-mode-toggle" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300" title="Toggle Dark Mode">
-                        <svg id="sun-icon" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
-                        <svg id="moon-icon" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/></svg>
-                    </button>
-                </div>
-            </div>
-            <h1 class="text-3xl font-extrabold text-gray-900">Personal Sneaker Stylist</h1>
-            <p class="text-gray-500 mt-1 text-sm">Your AI-powered style assistant</p>
-        </header>
-        <div class="mb-6 border-b border-gray-200">
-            <nav class="flex -mb-px" aria-label="Tabs">
-                <button class="tab-btn active w-1/5 py-3 px-1 text-center border-b-2 font-medium text-xs" data-tab="stylist">Stylist</button>
-                <button class="tab-btn inactive w-1/5 py-3 px-1 text-center border-b-2 font-medium text-xs" data-tab="browse">Browse</button>
-                <button class="tab-btn inactive w-1/5 py-3 px-1 text-center border-b-2 font-medium text-xs" data-tab="outfitBuilder">Outfits</button>
-                <button class="tab-btn inactive w-1/5 py-3 px-1 text-center border-b-2 font-medium text-xs" data-tab="wishlist">Wishlist</button>
-                <button class="tab-btn inactive w-1/5 py-3 px-1 text-center border-b-2 font-medium text-xs" data-tab="closet">Closet</button>
-            </nav>
-        </div>
-        <main id="stylist-view">
-            <div class="mb-4"><label class="block text-sm font-medium text-gray-700 mb-2">1. Upload Your Outfit</label><input type="file" id="image-upload" accept="image/*" class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 cursor-pointer"/></div>
-            <div id="image-preview-container" class="mb-4 hidden w-full aspect-square bg-gray-100 rounded-xl flex items-center justify-center overflow-hidden"><img id="image-preview" src="#" alt="Your Outfit" class="w-full h-full object-cover"/></div>
-            <div id="image-placeholder" class="mb-4 w-full aspect-square bg-gray-100 rounded-xl flex items-center justify-center border-2 border-dashed"><div class="text-center"><svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 mx-auto text-gray-300 mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg><p class="text-gray-400 text-sm">Drop or select an outfit image</p></div></div>
-            <div class="mb-4"><label class="block text-sm font-medium text-gray-700 mb-2">2. Select an Occasion</label><div id="occasion-filters" class="grid grid-cols-3 gap-2"><button class="filter-btn py-2 px-3 rounded-lg active text-sm" data-occasion="casual">Casual</button><button class="filter-btn py-2 px-3 rounded-lg inactive text-sm" data-occasion="athleisure">Athleisure</button><button class="filter-btn py-2 px-3 rounded-lg inactive text-sm" data-occasion="work">Work</button></div></div>
-            <button id="analyze-button" class="w-full bg-blue-600 text-white font-bold py-3 px-4 rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all duration-200 disabled:bg-gray-400 disabled:cursor-not-allowed">3. Analyze Outfit</button>
-            <div id="results-container" class="mt-6"></div>
-        </main>
-        <div id="browse-view" class="hidden"><h2 class="text-xl font-bold text-center mb-3">Browse Collection</h2><div class="flex gap-2 mb-3"><input type="text" id="browse-search" placeholder="Search sneakers..." class="flex-1 rounded-md border-gray-200 shadow-sm text-sm p-2 border"><select id="browse-sort" class="rounded-md border-gray-200 shadow-sm text-sm p-2 border"><option value="name">A-Z</option><option value="price-low">Price: Low</option><option value="price-high">Price: High</option></select></div><div class="flex gap-1 mb-3 flex-wrap" id="browse-color-filters"></div><div id="browse-items-container" class="space-y-3 max-h-96 overflow-y-auto"></div></div>
-        <div id="outfit-builder-view" class="hidden"><div id="outfit-builder-selection"><h2 class="text-xl font-bold text-center mb-4">Select a Sneaker to Style</h2><div id="outfit-builder-closet-items" class="grid grid-cols-3 gap-4"></div></div><div id="outfit-builder-results" class="hidden"></div></div>
-        <div id="wishlist-view" class="hidden"><div class="flex justify-between items-center mb-4"><h2 class="text-xl font-bold">My Wishlist</h2><span id="wishlist-total" class="text-sm text-gray-500"></span></div><div id="wishlist-items-container" class="space-y-3"></div></div>
-        <div id="closet-view" class="hidden"><div class="flex justify-between items-center mb-3"><h2 class="text-xl font-bold">My Sneaker Closet</h2><button id="add-sneaker-btn" class="bg-blue-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-blue-700 text-sm">+ Add</button></div><div id="closet-stats" class="grid grid-cols-3 gap-2 mb-4 text-center"><div class="bg-gray-50 rounded-lg p-2"><p class="text-lg font-bold text-blue-600" id="stat-total">0</p><p class="text-xs text-gray-500">Total</p></div><div class="bg-gray-50 rounded-lg p-2"><p class="text-lg font-bold text-green-600" id="stat-value">$0</p><p class="text-xs text-gray-500">Value</p></div><div class="bg-gray-50 rounded-lg p-2"><p class="text-lg font-bold text-purple-600" id="stat-brands">0</p><p class="text-xs text-gray-500">Brands</p></div></div><div id="closet-items-container" class="space-y-3"></div></div>
-        <div id="history-view" class="hidden"><div class="flex justify-between items-center mb-4"><h2 class="text-xl font-bold">Analysis History</h2><button id="back-from-history" class="text-blue-600 font-semibold text-sm">&larr; Back</button></div><div id="history-items-container" class="space-y-3"></div></div>
-    </div>
-    <div id="sneaker-detail-modal" class="modal fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden z-50"><div class="relative top-10 mx-auto p-5 border w-full max-w-sm shadow-lg rounded-xl bg-white dark:bg-gray-800"><button id="close-detail-modal" class="absolute top-3 right-3 text-gray-400 hover:text-gray-600 text-xl">&times;</button><div id="detail-content" class="text-center"></div></div></div>
-    <div id="add-sneaker-modal" class="modal fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden z-50"><div class="relative top-20 mx-auto p-5 border w-full max-w-md shadow-lg rounded-md bg-white dark:bg-gray-800"><div class="mt-3 text-center"><h3 id="modal-title" class="text-lg leading-6 font-medium text-gray-900">Add a Custom Sneaker</h3><form id="add-sneaker-form" class="mt-2 px-7 py-3 space-y-4 text-left"><input type="hidden" id="sneaker-id"><div><label for="sneaker-name" class="text-sm font-medium">Sneaker Name</label><input type="text" id="sneaker-name" required class="mt-1 w-full rounded-md border-gray-200 shadow-sm sm:text-sm p-2 border"></div><div><label for="sneaker-price" class="text-sm font-medium">Price ($)</label><input type="number" id="sneaker-price" min="0" class="mt-1 w-full rounded-md border-gray-200 shadow-sm sm:text-sm p-2 border" placeholder="0"></div><div><label for="sneaker-image-upload" class="text-sm font-medium">Thumbnail</label><input type="file" id="sneaker-image-upload" accept="image/*" class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-gray-50 file:text-gray-700 hover:file:bg-gray-100"><img id="modal-image-preview" src="#" alt="Sneaker preview" class="hidden mt-2 w-24 h-24 rounded-md object-cover mx-auto"/></div><div><label class="text-sm font-medium">Colors (AI Suggested)</label><div id="color-checkboxes" class="grid grid-cols-3 gap-2 mt-1"></div></div><div><label class="text-sm font-medium">Occasions</label><div id="occasion-checkboxes" class="grid grid-cols-3 gap-2 mt-1"></div></div></form><div class="items-center px-4 py-3"><button id="save-sneaker-btn" class="px-4 py-2 bg-blue-600 text-white text-base font-medium rounded-md w-full shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500">Save Sneaker</button><button id="cancel-sneaker-btn" class="mt-2 px-4 py-2 bg-gray-200 text-gray-800 text-base font-medium rounded-md w-full shadow-sm hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-300">Cancel</button></div></div></div></div>
-    <div id="toast-container" class="fixed bottom-6 left-1/2 -translate-x-1/2 z-50"></div>
-    <script>
-        const SNEAKER_DB=[{id:1,name:"Air Jordan 1 'Chicago'",brand:'Nike',colors:['Red','White','Black'],occasions:['casual'],price:180,imageUrl:'https://placehold.co/100x100/FEE2E2/B91C1C?text=AJ1+Chicago',year:1985},{id:2,name:"Nike Air Force 1 '07",brand:'Nike',colors:['White'],occasions:['casual','work'],price:110,imageUrl:'https://placehold.co/100x100/FFFFFF/1F2937?text=AF1',year:1982},{id:3,name:"Nike Dunk Low 'Panda'",brand:'Nike',colors:['Black','White'],occasions:['casual'],price:110,imageUrl:'https://placehold.co/100x100/000000/FFFFFF?text=Panda+Dunk',year:2021},{id:4,name:"Adidas Ultraboost 'Triple White'",brand:'Adidas',colors:['White'],occasions:['casual','athleisure'],price:190,imageUrl:'https://placehold.co/100x100/FFFFFF/111827?text=Ultraboost',year:2015},{id:5,name:"Yeezy 700 'Wave Runner'",brand:'Adidas',colors:['Grey','Teal','Black','Orange'],occasions:['casual'],price:300,imageUrl:'https://placehold.co/100x100/9CA3AF/0284C7?text=Wave+Runner',year:2017},{id:6,name:"New Balance 990v5 'Grey'",brand:'New Balance',colors:['Grey','White'],occasions:['casual','athleisure','work'],price:185,imageUrl:'https://placehold.co/100x100/D1D5DB/111827?text=NB+990v5',year:2019},{id:7,name:"Adidas Samba OG",brand:'Adidas',colors:['White','Black','Grey'],occasions:['casual'],price:100,imageUrl:'https://placehold.co/100x100/FFFFFF/111827?text=Samba',year:1950},{id:8,name:"Converse Chuck 70 High",brand:'Converse',colors:['Black','Sail'],occasions:['casual'],price:85,imageUrl:'https://placehold.co/100x100/111827/FFFFFF?text=Chuck+70',year:1970},{id:9,name:"Salomon XT-6",brand:'Salomon',colors:['Black','White','Grey'],occasions:['casual','athleisure'],price:180,imageUrl:'https://placehold.co/100x100/4B5563/F9FAFB?text=XT-6',year:2013},{id:10,name:"Common Projects Achilles Low",brand:'Common Projects',colors:['White'],occasions:['casual','work'],price:450,imageUrl:'https://placehold.co/100x100/FFFFFF/4B5563?text=CP+Achilles',year:2004},{id:11,name:"Travis Scott x AJ1 'Mocha'",brand:'Nike',colors:['Mocha','Sail','Black'],occasions:['casual'],price:1800,imageUrl:'https://placehold.co/100x100/854d27/f5f5f4?text=Mocha+AJ1',year:2019},{id:12,name:"Nike Dunk Low 'UNC'",brand:'Nike',colors:['University Blue','White'],occasions:['casual'],price:110,imageUrl:'https://placehold.co/100x100/60a5fa/FFFFFF?text=UNC+Dunk',year:2021}];
-        const CLOTHING_DB=[{id:101,type:'top',name:'White T-Shirt',colors:['White','Sail'],occasions:['casual','athleisure','work'],imageUrl:'https://placehold.co/150x150/FFFFFF/333333?text=White+Tee'},{id:102,type:'top',name:'Black Hoodie',colors:['Black'],occasions:['casual','athleisure'],imageUrl:'https://placehold.co/150x150/111827/FFFFFF?text=Black+Hoodie'},{id:103,type:'top',name:'Grey Sweatshirt',colors:['Grey'],occasions:['casual','athleisure'],imageUrl:'https://placehold.co/150x150/9CA3AF/FFFFFF?text=Grey+Sweatshirt'},{id:104,type:'top',name:'Blue Oxford Shirt',colors:['University Blue','Blue'],occasions:['work','casual'],imageUrl:'https://placehold.co/150x150/60a5fa/FFFFFF?text=Blue+Shirt'},{id:105,type:'top',name:'Red Flannel',colors:['Red','Black'],occasions:['casual'],imageUrl:'https://placehold.co/150x150/DC2626/111827?text=Red+Flannel'},{id:201,type:'bottom',name:'Black Jeans',colors:['Black'],occasions:['casual','work'],imageUrl:'https://placehold.co/150x150/1F2937/FFFFFF?text=Black+Jeans'},{id:202,type:'bottom',name:'Light Wash Jeans',colors:['University Blue','Blue'],occasions:['casual'],imageUrl:'https://placehold.co/150x150/A5B4FC/111827?text=Light+Jeans'},{id:203,type:'bottom',name:'Grey Sweatpants',colors:['Grey'],occasions:['casual','athleisure'],imageUrl:'https://placehold.co/150x150/B0B0B0/111827?text=Grey+Sweats'},{id:204,type:'bottom',name:'Khaki Chinos',colors:['Mocha','Sail'],occasions:['casual','work'],imageUrl:'https://placehold.co/150x150/D2B48C/111827?text=Khakis'},{id:205,type:'bottom',name:'Black Tech Shorts',colors:['Black'],occasions:['athleisure'],imageUrl:'https://placehold.co/150x150/222222/FFFFFF?text=Black+Shorts'}];
-        const COLOR_MAP={'Black':[20,20,20],'White':[250,250,250],'Sail':[245,245,235],'Red':[215,30,45],'Green':[0,128,0],'Blue':[0,0,255],'Royal Blue':[65,105,225],'University Blue':[96,165,250],'Grey':[128,128,128],'Yellow':[255,255,0],'Mocha':[133,77,39],'Teal':[0,128,128],'Orange':[255,165,0]};
-        const OCCASIONS=['casual','athleisure','work'];
-        let uploadedImage=null,selectedOccasion='casual',myCloset=[],customSneakers=[],myWishlist=[],analysisHistory=[],resizedSneakerImageUrl=null,browseColorFilter='all',isDark=false;
-        const allViews={stylist:document.getElementById('stylist-view'),closet:document.getElementById('closet-view'),outfitBuilder:document.getElementById('outfit-builder-view'),browse:document.getElementById('browse-view'),wishlist:document.getElementById('wishlist-view'),history:document.getElementById('history-view')};
-        const closetItemsContainer=document.getElementById('closet-items-container'),imageUpload=document.getElementById('image-upload'),imagePreview=document.getElementById('image-preview'),imagePlaceholder=document.getElementById('image-placeholder'),imagePreviewContainer=document.getElementById('image-preview-container'),analyzeButton=document.getElementById('analyze-button'),resultsContainer=document.getElementById('results-container'),occasionFilters=document.getElementById('occasion-filters'),addSneakerModal=document.getElementById('add-sneaker-modal'),modalTitle=document.getElementById('modal-title'),modalImagePreview=document.getElementById('modal-image-preview'),sneakerImageUpload=document.getElementById('sneaker-image-upload'),sneakerIdInput=document.getElementById('sneaker-id'),colorThief=new ColorThief();
-        function showToast(msg,type='success'){const tc=document.getElementById('toast-container');const t=document.createElement('div');t.className=`toast ${type==='success'?'bg-green-500':'bg-blue-500'} text-white px-4 py-2 rounded-lg shadow-lg text-sm font-medium mb-2`;t.textContent=msg;tc.appendChild(t);setTimeout(()=>t.remove(),3000);}
-        function resizeImage(file,mw,mh){return new Promise((res,rej)=>{const r=new FileReader();r.onload=e=>{const img=new Image();img.onload=()=>{const c=document.createElement('canvas');let w=img.width,h=img.height;if(w>h){if(w>mw){h*=mw/w;w=mw;}}else{if(h>mh){w*=mh/h;h=mh;}}c.width=w;c.height=h;c.getContext('2d').drawImage(img,0,0,w,h);res(c.toDataURL('image/jpeg',0.8));};img.onerror=rej;img.src=e.target.result;};r.onerror=rej;r.readAsDataURL(file);});}
-        function loadData(){myCloset=JSON.parse(localStorage.getItem('mySneakerCloset')||'[]');customSneakers=JSON.parse(localStorage.getItem('myCustomSneakers')||'[]');myWishlist=JSON.parse(localStorage.getItem('myWishlist')||'[]');analysisHistory=JSON.parse(localStorage.getItem('analysisHistory')||'[]');isDark=localStorage.getItem('darkMode')==='true';}
-        function saveData(){localStorage.setItem('mySneakerCloset',JSON.stringify(myCloset));localStorage.setItem('myCustomSneakers',JSON.stringify(customSneakers));localStorage.setItem('myWishlist',JSON.stringify(myWishlist));localStorage.setItem('analysisHistory',JSON.stringify(analysisHistory));}
-        function getFullSneakerList(){return[...SNEAKER_DB,...customSneakers];}
-        function addToCloset(id){if(!myCloset.includes(id)){myCloset.push(id);updateClosetBadge();showToast('Added to closet!');}}
-        function removeFromCloset(id){myCloset=myCloset.filter(i=>i!==id);customSneakers=customSneakers.filter(s=>s.id!==id);saveData();renderCloset();renderOutfitBuilderSelection();updateClosetBadge();}
-        function toggleWishlist(id){if(myWishlist.includes(id)){myWishlist=myWishlist.filter(i=>i!==id);showToast('Removed from wishlist','info');}else{myWishlist.push(id);showToast('Added to wishlist!');}saveData();}
-        function updateClosetBadge(){document.getElementById('closet-count-badge').textContent=myCloset.length+' in closet';}
-        function getColorDistance(a,b){return Math.sqrt(Math.pow(a[0]-b[0],2)+Math.pow(a[1]-b[1],2)+Math.pow(a[2]-b[2],2));}
-        function getColorName(rgb){let name='',min=Infinity;for(const c in COLOR_MAP){const d=getColorDistance(rgb,COLOR_MAP[c]);if(d<min){min=d;name=c;}}return name;}
-        function calcMatchScore(sc,dc){const d=dc.map(n=>n.toLowerCase()),s=sc.map(n=>n.toLowerCase());let m=s.filter(c=>d.includes(c)).length;return Math.min(100,Math.round((m/Math.max(s.length,1))*100+Math.random()*20+20));}
-        function makeScoreRing(score){const color=score>=80?'#22c55e':score>=50?'#eab308':'#ef4444';const c=2*Math.PI*18,o=c-c*score/100;return`<div class="score-ring w-10 h-10"><svg width="40" height="40"><circle cx="20" cy="20" r="18" fill="none" stroke="#e5e7eb" stroke-width="3"/><circle cx="20" cy="20" r="18" fill="none" stroke="${color}" stroke-width="3" stroke-dasharray="${c}" stroke-dashoffset="${o}" stroke-linecap="round"/></svg><span class="score-text" style="color:${color}">${score}</span></div>`;}
-        function renderCloset(){closetItemsContainer.innerHTML='';const items=getFullSneakerList().filter(s=>myCloset.includes(s.id));if(items.length===0){closetItemsContainer.innerHTML='<p class="text-center text-gray-500 py-8">Your closet is empty. Browse sneakers to add some!</p>';updateClosetStats([]);return;}items.forEach(s=>{closetItemsContainer.innerHTML+=`<div class="sneaker-card bg-gray-50 p-3 rounded-lg flex items-center justify-between cursor-pointer" data-detail-id="${s.id}"><div class="flex items-center space-x-3"><img src="${s.imageUrl}" alt="${s.name}" class="w-12 h-12 rounded-md object-cover bg-gray-200"><div><span class="font-medium text-sm">${s.name}</span><p class="text-xs text-gray-400">${s.brand||'Custom'} &bull; $${s.price||0}</p></div></div><div class="flex space-x-2 items-center"><button class="edit-btn text-blue-500 hover:text-blue-700 font-semibold text-xs" data-id="${s.id}">Edit</button><button class="remove-btn text-red-500 hover:text-red-700 font-semibold text-xs" data-id="${s.id}">Remove</button></div></div>`;});updateClosetStats(items);}
-        function updateClosetStats(items){document.getElementById('stat-total').textContent=items.length;document.getElementById('stat-value').textContent='$'+items.reduce((sum,s)=>sum+(s.price||0),0).toLocaleString();document.getElementById('stat-brands').textContent=new Set(items.map(s=>s.brand||'Custom')).size;}
-        function renderWishlist(){const c=document.getElementById('wishlist-items-container');c.innerHTML='';const items=getFullSneakerList().filter(s=>myWishlist.includes(s.id));document.getElementById('wishlist-total').textContent=items.length>0?`${items.length} items &bull; $${items.reduce((sum,s)=>sum+(s.price||0),0).toLocaleString()}`:'';if(items.length===0){c.innerHTML='<p class="text-center text-gray-500 py-8">Your wishlist is empty. Tap the heart on any sneaker!</p>';return;}items.forEach(s=>{c.innerHTML+=`<div class="sneaker-card bg-gray-50 p-3 rounded-lg flex items-center justify-between"><div class="flex items-center space-x-3 cursor-pointer" data-detail-id="${s.id}"><img src="${s.imageUrl}" alt="${s.name}" class="w-12 h-12 rounded-md object-cover bg-gray-200"><div><span class="font-medium text-sm">${s.name}</span><p class="text-xs text-gray-400">$${s.price||0}</p></div></div><div class="flex items-center gap-2"><button class="add-btn bg-blue-100 text-blue-700 hover:bg-blue-200 font-bold text-sm w-8 h-8 rounded-full ${myCloset.includes(s.id)?'opacity-50':''}" data-id="${s.id}" ${myCloset.includes(s.id)?'disabled':''}>+</button><span class="wishlist-heart text-red-500 text-lg" data-wishlist-id="${s.id}">&hearts;</span></div></div>`;});}
-        function renderBrowseView(term=''){const c=document.getElementById('browse-items-container');c.innerHTML='';let items=SNEAKER_DB.filter(s=>s.name.toLowerCase().includes(term.toLowerCase()));if(browseColorFilter!=='all')items=items.filter(s=>s.colors.some(c=>c.toLowerCase()===browseColorFilter.toLowerCase()));const sort=document.getElementById('browse-sort').value;if(sort==='price-low')items.sort((a,b)=>a.price-b.price);else if(sort==='price-high')items.sort((a,b)=>b.price-a.price);else items.sort((a,b)=>a.name.localeCompare(b.name));if(items.length===0){c.innerHTML='<p class="text-center text-gray-500 py-4">No sneakers found.</p>';return;}items.forEach(s=>{const inC=myCloset.includes(s.id),inW=myWishlist.includes(s.id);c.innerHTML+=`<div class="sneaker-card bg-gray-50 p-3 rounded-lg flex items-center justify-between fade-in"><div class="flex items-center space-x-3 cursor-pointer" data-detail-id="${s.id}"><img src="${s.imageUrl}" alt="${s.name}" class="w-12 h-12 rounded-md object-cover bg-gray-200"><div><span class="font-medium text-sm">${s.name}</span><p class="text-xs text-gray-400">${s.brand} &bull; $${s.price}</p></div></div><div class="flex items-center gap-2"><span class="wishlist-heart ${inW?'text-red-500':'text-gray-300'} text-lg" data-wishlist-id="${s.id}">&hearts;</span><button class="add-btn bg-blue-100 text-blue-700 hover:bg-blue-200 font-bold text-sm w-8 h-8 rounded-full disabled:opacity-50 disabled:cursor-not-allowed" data-id="${s.id}" ${inC?'disabled':''}>+</button></div></div>`;});}
-        function renderBrowseColorFilters(){const colors=['all',...new Set(SNEAKER_DB.flatMap(s=>s.colors))].sort();document.getElementById('browse-color-filters').innerHTML=colors.map(c=>`<button class="browse-color-btn text-xs px-2 py-1 rounded-full ${c===browseColorFilter?'bg-blue-600 text-white':'bg-gray-200 text-gray-600 dark:bg-gray-600 dark:text-gray-300'}" data-color="${c}">${c==='all'?'All':c}</button>`).join('');}
-        function findSneakers(cn,occ){const recs=new Set(),lc=cn.map(n=>n.toLowerCase()),db=getFullSneakerList().filter(s=>s.occasions.includes(occ));db.forEach(s=>{if(s.colors.some(sc=>lc.includes(sc.toLowerCase())))recs.add(s);});return Array.from(recs);}
-        function displayResults(recs,palette,colorNames){resultsContainer.innerHTML='';sessionStorage.setItem('lastResults',JSON.stringify(recs));sessionStorage.setItem('lastPalette',JSON.stringify(palette));analysisHistory.unshift({date:new Date().toISOString(),occasion:selectedOccasion,palette,colorNames,resultCount:recs.length});if(analysisHistory.length>20)analysisHistory=analysisHistory.slice(0,20);saveData();resultsContainer.innerHTML='<h2 class="text-lg font-semibold text-gray-800 mb-2 text-center">Detected Palette</h2>';const pd=document.createElement('div');pd.className='flex justify-center items-center space-x-2 mb-1';palette.forEach(rgb=>{pd.innerHTML+=`<div class="w-8 h-8 rounded-full border-2 border-white shadow" style="background-color:rgb(${rgb[0]},${rgb[1]},${rgb[2]})" title="rgb(${rgb.join(',')})"></div>`;});resultsContainer.appendChild(pd);const cl=document.createElement('p');cl.className='text-center text-xs text-gray-400 mb-4';cl.textContent='Colors: '+colorNames.join(', ');resultsContainer.appendChild(cl);if(recs.length>0){const list=document.createElement('ul');list.className='space-y-3';recs.forEach(s=>{const inC=myCloset.includes(s.id),inW=myWishlist.includes(s.id),score=calcMatchScore(s.colors,colorNames),badge=inC?'<span class="ml-1 text-xs font-semibold bg-green-100 text-green-800 px-2 py-0.5 rounded-full">In Closet</span>':'';list.innerHTML+=`<li class="sneaker-card bg-gray-50 p-3 rounded-lg flex items-center justify-between fade-in"><div class="flex items-center space-x-3 cursor-pointer" data-detail-id="${s.id}"><img src="${s.imageUrl}" alt="${s.name}" class="w-14 h-14 rounded-md object-cover bg-gray-200"><div><span class="font-medium text-sm">${s.name}</span>${badge}<p class="text-xs text-gray-400">$${s.price||0}</p></div></div><div class="flex items-center gap-2">${makeScoreRing(score)}<span class="wishlist-heart ${inW?'text-red-500':'text-gray-300'} text-lg" data-wishlist-id="${s.id}">&hearts;</span><button class="add-btn bg-blue-100 text-blue-700 hover:bg-blue-200 font-bold text-sm w-8 h-8 rounded-full disabled:opacity-50" data-id="${s.id}" ${inC?'disabled':''}>+</button></div></li>`;});resultsContainer.appendChild(list);}else{resultsContainer.innerHTML+='<p class="text-center text-gray-500 bg-gray-50 p-3 rounded-lg">No matching sneakers found.</p>';}}
-        function renderHistory(){const c=document.getElementById('history-items-container');c.innerHTML='';if(analysisHistory.length===0){c.innerHTML='<p class="text-center text-gray-500 py-8">No analyses yet.</p>';return;}analysisHistory.forEach(h=>{const d=new Date(h.date),ts=d.toLocaleDateString()+' '+d.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}),dots=h.palette.map(rgb=>`<div class="w-5 h-5 rounded-full border border-white shadow-sm" style="background-color:rgb(${rgb[0]},${rgb[1]},${rgb[2]})"></div>`).join('');c.innerHTML+=`<div class="bg-gray-50 p-3 rounded-lg fade-in"><div class="flex justify-between items-center mb-2"><span class="text-xs text-gray-400">${ts}</span><span class="text-xs font-medium capitalize bg-blue-50 text-blue-600 px-2 py-0.5 rounded-full">${h.occasion}</span></div><div class="flex items-center gap-1 mb-1">${dots}</div><p class="text-xs text-gray-500">${h.resultCount} match${h.resultCount!==1?'es':''} &bull; ${h.colorNames.join(', ')}</p></div>`;});}
-        function showSneakerDetail(id){const s=getFullSneakerList().find(s=>s.id===id);if(!s)return;const inC=myCloset.includes(s.id),inW=myWishlist.includes(s.id),dots=s.colors.map(c=>{const rgb=COLOR_MAP[c]||[128,128,128];return`<div class="flex items-center gap-1"><div class="w-4 h-4 rounded-full border" style="background-color:rgb(${rgb.join(',')})"></div><span class="text-xs">${c}</span></div>`;}).join('');document.getElementById('detail-content').innerHTML=`<img src="${s.imageUrl}" alt="${s.name}" class="w-32 h-32 rounded-xl object-cover mx-auto mb-3 bg-gray-200"><h3 class="text-lg font-bold">${s.name}</h3><p class="text-sm text-gray-500 mb-1">${s.brand||'Custom'}</p><p class="text-2xl font-extrabold text-blue-600 mb-3">$${(s.price||0).toLocaleString()}</p><div class="flex justify-center gap-3 mb-3 flex-wrap">${dots}</div><div class="flex justify-center gap-2 mb-4">${s.occasions.map(o=>`<span class="text-xs capitalize bg-gray-100 dark:bg-gray-700 px-2 py-1 rounded-full">${o}</span>`).join('')}</div>${s.year?`<p class="text-xs text-gray-400 mb-3">Released: ${s.year}</p>`:''}<div class="flex gap-2 justify-center"><button class="add-btn px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700 disabled:opacity-50" data-id="${s.id}" ${inC?'disabled':''}>${inC?'In Closet':'Add to Closet'}</button><button class="wishlist-toggle px-4 py-2 rounded-lg text-sm font-medium ${inW?'bg-red-100 text-red-600':'bg-gray-100 text-gray-600'}" data-wishlist-id="${s.id}">${inW?'Remove from Wishlist':'Add to Wishlist'}</button></div>`;document.getElementById('sneaker-detail-modal').classList.remove('hidden');}
-        function renderOutfitBuilderSelection(){const c=document.getElementById('outfit-builder-closet-items');c.innerHTML='';const items=getFullSneakerList().filter(s=>myCloset.includes(s.id));if(items.length===0){c.innerHTML='<p class="text-center text-gray-500 col-span-3 py-8">Add sneakers to your closet first!</p>';return;}items.forEach(s=>{c.innerHTML+=`<button class="outfit-sneaker-btn text-center" data-id="${s.id}"><img src="${s.imageUrl}" alt="${s.name}" class="w-full h-auto rounded-lg object-cover aspect-square bg-gray-200"><p class="text-xs font-medium mt-1">${s.name}</p></button>`;});}
-        function findOutfits(sneaker){const outfits=[],sc=sneaker.colors.map(c=>c.toLowerCase());for(const occ of sneaker.occasions){const tops=CLOTHING_DB.filter(c=>c.type==='top'&&c.occasions.includes(occ)&&c.colors.some(cc=>sc.includes(cc.toLowerCase())));const bottoms=CLOTHING_DB.filter(c=>c.type==='bottom'&&c.occasions.includes(occ)&&c.colors.some(cc=>sc.includes(cc.toLowerCase())));if(tops.length>0&&bottoms.length>0)outfits.push({occasion:occ,top:tops[0],bottom:bottoms[0]});}return outfits;}
-        function displayOutfitResults(sneaker,outfits){const c=document.getElementById('outfit-builder-results');c.innerHTML=`<div class="text-center mb-4"><button id="back-to-selection-btn" class="text-blue-600 font-semibold text-sm">&larr; Back</button><h2 class="text-lg font-bold mt-1">Styling: ${sneaker.name}</h2></div>`;if(outfits.length===0){c.innerHTML+='<p class="text-center text-gray-500">No outfit ideas found.</p>';return;}outfits.forEach(o=>{c.innerHTML+=`<div class="bg-gray-50 rounded-lg p-4 mb-3 fade-in"><h3 class="font-semibold text-center capitalize mb-2 text-sm">${o.occasion} Look</h3><div class="flex justify-center space-x-4"><div class="text-center"><img src="${o.top.imageUrl}" alt="${o.top.name}" class="w-20 h-20 rounded-md object-cover bg-gray-200"><p class="text-xs mt-1">${o.top.name}</p></div><div class="text-center"><img src="${o.bottom.imageUrl}" alt="${o.bottom.name}" class="w-20 h-20 rounded-md object-cover bg-gray-200"><p class="text-xs mt-1">${o.bottom.name}</p></div></div></div>`;});}
-        function populateModalCheckboxes(){document.getElementById('color-checkboxes').innerHTML=Object.keys(COLOR_MAP).sort().map(c=>`<label class="flex items-center space-x-2"><input type="checkbox" name="colors" value="${c}" class="rounded border-gray-300"><span class="text-sm">${c}</span></label>`).join('');document.getElementById('occasion-checkboxes').innerHTML=OCCASIONS.map(o=>`<label class="flex items-center space-x-2"><input type="checkbox" name="occasions" value="${o}" class="rounded border-gray-300"><span class="capitalize text-sm">${o}</span></label>`).join('');}
-        function openEditModal(id){const s=getFullSneakerList().find(s=>s.id===id);if(!s)return;modalTitle.textContent='Edit Sneaker';sneakerIdInput.value=s.id;document.getElementById('sneaker-name').value=s.name;document.getElementById('sneaker-price').value=s.price||0;document.querySelectorAll('#color-checkboxes input,#occasion-checkboxes input').forEach(b=>b.checked=false);s.colors.forEach(c=>{const cb=document.querySelector(`#color-checkboxes input[value="${c}"]`);if(cb)cb.checked=true;});s.occasions.forEach(o=>{const cb=document.querySelector(`#occasion-checkboxes input[value="${o}"]`);if(cb)cb.checked=true;});modalImagePreview.src=s.imageUrl;modalImagePreview.classList.remove('hidden');resizedSneakerImageUrl=s.imageUrl;sneakerImageUpload.required=false;addSneakerModal.classList.remove('hidden');}
-        function applyDarkMode(){if(isDark){document.documentElement.classList.add('dark');document.getElementById('sun-icon').classList.remove('hidden');document.getElementById('moon-icon').classList.add('hidden');}else{document.documentElement.classList.remove('dark');document.getElementById('sun-icon').classList.add('hidden');document.getElementById('moon-icon').classList.remove('hidden');}}
-        document.addEventListener('DOMContentLoaded',()=>{
-            loadData();applyDarkMode();renderCloset();populateModalCheckboxes();renderBrowseColorFilters();updateClosetBadge();analyzeButton.disabled=true;
-            document.querySelectorAll('.tab-btn').forEach(btn=>{btn.addEventListener('click',()=>{const tab=btn.dataset.tab;document.querySelectorAll('.tab-btn').forEach(b=>b.classList.replace('active','inactive'));btn.classList.replace('inactive','active');Object.values(allViews).forEach(v=>v.classList.add('hidden'));allViews[tab].classList.remove('hidden');if(tab==='closet')renderCloset();if(tab==='browse'){renderBrowseView();renderBrowseColorFilters();}if(tab==='wishlist')renderWishlist();if(tab==='outfitBuilder'){document.getElementById('outfit-builder-selection').classList.remove('hidden');document.getElementById('outfit-builder-results').classList.add('hidden');renderOutfitBuilderSelection();}});});
-            document.getElementById('dark-mode-toggle').addEventListener('click',()=>{isDark=!isDark;localStorage.setItem('darkMode',isDark);applyDarkMode();});
-            document.getElementById('history-btn').addEventListener('click',()=>{Object.values(allViews).forEach(v=>v.classList.add('hidden'));allViews.history.classList.remove('hidden');document.querySelectorAll('.tab-btn').forEach(b=>b.classList.replace('active','inactive'));renderHistory();});
-            document.getElementById('back-from-history').addEventListener('click',()=>{allViews.history.classList.add('hidden');allViews.stylist.classList.remove('hidden');document.querySelector('[data-tab="stylist"]').classList.replace('inactive','active');});
-            imageUpload.addEventListener('change',e=>{const file=e.target.files[0];if(file){const r=new FileReader();r.onload=ev=>{imagePreview.src=ev.target.result;uploadedImage=imagePreview;imagePreviewContainer.classList.remove('hidden');imagePlaceholder.classList.add('hidden');analyzeButton.disabled=false;resultsContainer.innerHTML='';};r.readAsDataURL(file);}});
-            occasionFilters.addEventListener('click',e=>{if(e.target.tagName==='BUTTON'){selectedOccasion=e.target.dataset.occasion;document.querySelectorAll('#occasion-filters .filter-btn').forEach(b=>{b.classList.replace('active','inactive');if(b.dataset.occasion===selectedOccasion)b.classList.add('active');});}});
-            analyzeButton.addEventListener('click',()=>{if(!uploadedImage)return;resultsContainer.innerHTML='<div class="mx-auto loader"></div><p class="text-center text-sm text-gray-400 mt-2">Analyzing colors...</p>';analyzeButton.disabled=true;analyzeButton.textContent='Analyzing...';setTimeout(()=>{try{const p=colorThief.getPalette(uploadedImage,3);const names=[...new Set(p.map(rgb=>getColorName(rgb)))];displayResults(findSneakers(names,selectedOccasion),p,names);}catch(err){console.error(err);resultsContainer.innerHTML='<p class="text-center text-red-500">Could not analyze image.</p>';}finally{analyzeButton.disabled=false;analyzeButton.textContent='3. Analyze Outfit';}},100);});
-            document.getElementById('browse-search').addEventListener('input',e=>renderBrowseView(e.target.value));
-            document.getElementById('browse-sort').addEventListener('change',()=>renderBrowseView(document.getElementById('browse-search').value));
-            document.getElementById('browse-color-filters').addEventListener('click',e=>{if(e.target.classList.contains('browse-color-btn')){browseColorFilter=e.target.dataset.color;renderBrowseColorFilters();renderBrowseView(document.getElementById('browse-search').value);}});
-            document.body.addEventListener('click',e=>{const t=e.target;if(t.closest('.add-btn')&&!t.closest('.add-btn').disabled){const id=t.closest('.add-btn').dataset.id;const sid=id.startsWith('custom-')?id:parseInt(id,10);addToCloset(sid);saveData();const lr=JSON.parse(sessionStorage.getItem('lastResults')||'[]'),lp=JSON.parse(sessionStorage.getItem('lastPalette')||'[]');if(lr.length>0&&!allViews.stylist.classList.contains('hidden'))displayResults(lr,lp,[]);if(!allViews.browse.classList.contains('hidden'))renderBrowseView(document.getElementById('browse-search').value);if(!allViews.wishlist.classList.contains('hidden'))renderWishlist();}if(t.closest('.remove-btn')){const id=t.closest('.remove-btn').dataset.id;removeFromCloset(id.startsWith('custom-')?id:parseInt(id,10));}if(t.closest('.edit-btn')){const id=t.closest('.edit-btn').dataset.id;openEditModal(id.startsWith('custom-')?id:parseInt(id,10));}if(t.closest('.wishlist-heart')||t.closest('.wishlist-toggle')){const el=t.closest('.wishlist-heart')||t.closest('.wishlist-toggle');const id=el.dataset.wishlistId;const sid=id.startsWith('custom-')?id:parseInt(id,10);toggleWishlist(sid);if(!allViews.browse.classList.contains('hidden'))renderBrowseView(document.getElementById('browse-search').value);if(!allViews.wishlist.classList.contains('hidden'))renderWishlist();if(!document.getElementById('sneaker-detail-modal').classList.contains('hidden'))showSneakerDetail(sid);}if(t.closest('[data-detail-id]')){const id=t.closest('[data-detail-id]').dataset.detailId;showSneakerDetail(id.startsWith('custom-')?id:parseInt(id,10));}if(t.closest('.outfit-sneaker-btn')){const id=t.closest('.outfit-sneaker-btn').dataset.id;const sid=id.startsWith('custom-')?id:parseInt(id,10);const s=getFullSneakerList().find(s=>s.id===sid);if(s){displayOutfitResults(s,findOutfits(s));document.getElementById('outfit-builder-selection').classList.add('hidden');document.getElementById('outfit-builder-results').classList.remove('hidden');}}if(t.closest('#back-to-selection-btn')){document.getElementById('outfit-builder-selection').classList.remove('hidden');document.getElementById('outfit-builder-results').classList.add('hidden');}});
-            document.getElementById('close-detail-modal').addEventListener('click',()=>document.getElementById('sneaker-detail-modal').classList.add('hidden'));
-            document.getElementById('sneaker-detail-modal').addEventListener('click',e=>{if(e.target===document.getElementById('sneaker-detail-modal'))document.getElementById('sneaker-detail-modal').classList.add('hidden');});
-            document.getElementById('add-sneaker-btn').addEventListener('click',()=>{modalTitle.textContent='Add a Custom Sneaker';document.getElementById('add-sneaker-form').reset();sneakerIdInput.value='';document.getElementById('sneaker-price').value='';modalImagePreview.classList.add('hidden');sneakerImageUpload.required=true;addSneakerModal.classList.remove('hidden');});
-            document.getElementById('cancel-sneaker-btn').addEventListener('click',()=>{document.getElementById('add-sneaker-form').reset();modalImagePreview.classList.add('hidden');addSneakerModal.classList.add('hidden');resizedSneakerImageUrl=null;});
-            sneakerImageUpload.addEventListener('change',async e=>{const file=e.target.files[0];if(file){try{resizedSneakerImageUrl=await resizeImage(file,200,200);modalImagePreview.src=resizedSneakerImageUrl;modalImagePreview.classList.remove('hidden');const img=new Image();img.onload=()=>{const p=colorThief.getPalette(img,4);const names=[...new Set(p.map(rgb=>getColorName(rgb)))];document.querySelectorAll('#color-checkboxes input').forEach(b=>b.checked=false);names.forEach(n=>{const cb=document.querySelector(`#color-checkboxes input[value="${n}"]`);if(cb)cb.checked=true;});};img.src=resizedSneakerImageUrl;}catch(err){console.error(err);alert('Could not process image.');resizedSneakerImageUrl=null;}}});
-            document.getElementById('save-sneaker-btn').addEventListener('click',()=>{const form=document.getElementById('add-sneaker-form');const id=sneakerIdInput.value,name=form.querySelector('#sneaker-name').value,price=parseInt(form.querySelector('#sneaker-price').value)||0,colors=Array.from(form.querySelectorAll('input[name="colors"]:checked')).map(el=>el.value),occasions=Array.from(form.querySelectorAll('input[name="occasions"]:checked')).map(el=>el.value),imageFile=form.querySelector('#sneaker-image-upload').files[0];if(name&&colors.length>0&&occasions.length>0){if(id){const idx=customSneakers.findIndex(s=>s.id==id);if(idx>-1){customSneakers[idx].name=name;customSneakers[idx].price=price;customSneakers[idx].colors=colors;customSneakers[idx].occasions=occasions;if(resizedSneakerImageUrl&&resizedSneakerImageUrl!==customSneakers[idx].imageUrl)customSneakers[idx].imageUrl=resizedSneakerImageUrl;}}else{if(!imageFile&&!resizedSneakerImageUrl){alert('Please upload an image.');return;}const ns={id:`custom-${Date.now()}`,name,brand:'Custom',price,colors,occasions,imageUrl:resizedSneakerImageUrl};customSneakers.push(ns);addToCloset(ns.id);}saveData();renderCloset();addSneakerModal.classList.add('hidden');form.reset();modalImagePreview.classList.add('hidden');resizedSneakerImageUrl=null;showToast('Sneaker saved!');}else{alert('Please fill out all fields.');}});
-        });
-    </script>
-</body>
-</html>
+0 in closet
+
+Personal Sneaker Stylist
+Your AI-powered style assistant
+Sneaker of the Day
+
+
+Stylist Browse Outfits Wishlist Closet More
+I Have an Outfit I Have a Shoe
+Color Match
+1. Capture or Upload Your Outfit
+Use Camera Upload
+
+×
+Retake
+Take a photo or upload an outfit image
+2. Select an Occasion
+CasualAthleisureWork
+3. Find Matching Sneakers
+
+Browse Collection
+A-ZPrice: LowPrice: High
+
+
+Outfit Builder
+Surprise Me!
+
+
+
+My Wishlist
+
+My Closet
++ Add
+0
+Total
+$0
+Value
+0
+Brands
+
+More Features
+🎯
+Style Quiz
+Discover your sneaker personality
+⚖️
+Compare Sneakers
+Side-by-side comparison
+📊
+Collection Insights
+Charts & analytics for your closet
+👟
+Wear Tracker
+Log and track your wears
+←
+Style Quiz
+
+
+←
+Compare
+Tap to select
+Tap to select
+
+Pick a sneaker:
+
+←
+Insights
+
+←
+Wear Tracker
+
+Analysis History
+← Back
+
+×
+
+Add a Custom Sneaker
+Name
+Price ($)
+Thumbnail
+Colors
+
+Occasions
+
+SaveCancel
+×
+
+AI Vision Settings
+Choose your AI provider and add your API key
+ClaudeGemini
+
+API Key
+
+Enable AI AnalysisClear Key & Use Color Match
+
+
